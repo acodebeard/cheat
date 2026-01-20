@@ -1,42 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const cheats = [
-    {
-      name: 'confidence',
-      bodyClass: 'cheat-confidence',
-      sequence: [
-        'ArrowLeft', 'ArrowLeft',
-        'ArrowRight', 'ArrowRight',
-        'ArrowUp', 'ArrowUp',
-        'ArrowDown', 'ArrowDown'
-      ],
-      onEnable: () => alert('CHEAT ON: +10 confidence. / +0 imposter syndrome.'),
-      onDisable: () => alert('CHEAT OFF: Confidence mode disabled.')
-    },
-    {
-      name: 'geocities',
-      bodyClass: 'cheat-geocities',
-      sequence: ['g', 'e', 'o', 'c', 'i', 't', 'i', 'e', 's'],
-      onEnable: () => alert('CHEAT ON: Welcome to the GeoCities zone.'),
-      onDisable: () => alert('CHEAT OFF: GeoCities zone disabled.')
-    },
-    {
-      name: 'konami',
-      bodyClass: 'cheat-konami',
-      sequence: [
-        'ArrowUp', 'ArrowUp',
-        'ArrowDown', 'ArrowDown',
-        'ArrowLeft', 'ArrowRight',
-        'ArrowLeft', 'ArrowRight',
-        'b', 'a'
-      ],
-      onEnable: () => alert('CHEAT ON: Konami mode toggled on.'),
-      onDisable: () => alert('CHEAT OFF: Konami mode toggled off.')
-    }
-  ];
+  const DEFAULT_CONFIG = {
+    enabled: {},
+    maxGapMs: 2000
+  };
+
+  const CONFIG = Object.assign({}, DEFAULT_CONFIG, window.CHEAT_CONFIG || {});
+  const ENABLED = CONFIG.enabled || {};
+  const MAX_GAP_MS = Number(CONFIG.maxGapMs) > 0 ? Number(CONFIG.maxGapMs) : 2000;
+
+  const allCheats = Array.isArray(window.CHEAT_DEFS) ? window.CHEAT_DEFS : [];
+  const cheats = allCheats.filter((c) => c && c.name && ENABLED[c.name] !== false);
+
+  if (!cheats.length) return;
 
   const cheatStates = cheats.map(() => ({ index: 0 }));
   let lastKeyTime = 0;
-  const MAX_GAP_MS = 2000;
 
   function reset() {
     cheatStates.forEach((state) => { state.index = 0; });

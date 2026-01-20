@@ -5,7 +5,8 @@ window.CHEAT_CONFIG = {
   enabled: {
     confidence: true,
     geocities: true,
-    konami: true
+    konami: true,
+    drunk: true,
   },
 
   // Optional: global behavior
