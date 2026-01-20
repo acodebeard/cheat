@@ -1,0 +1,110 @@
+:root {
+      color-scheme: dark;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      line-height: 1.5;
+      background: #1a1919;
+      color: #fefefe;
+      overflow-x: hidden;
+      transform-origin: top;
+      transition: 2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+
+    .wrap {
+      max-width: 60rem;
+      margin: 0 auto;
+      padding: 2.5rem 1rem;
+    }
+
+    header {
+      margin-bottom: 1.5rem;
+    }
+
+    h1 {
+      margin: 0 0 0.5rem;
+      font-size: 2rem;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+    }
+
+    .muted {
+      color:#ccc;
+      margin: 0;
+    }
+
+    .card {
+      margin-top: 1.5rem;
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      border-radius: 1rem;
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.02);
+    }
+
+    h2 {
+      margin: 0 0 0.75rem;
+      font-size: 1.25rem;
+      line-height: 1.2;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 1.25rem;
+    }
+
+    li {
+      margin: 0.6rem 0;
+    }
+
+    .code-name {
+      font-weight: 800;
+    }
+
+    code,
+    kbd {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 0.95em;
+    }
+
+    kbd {
+      display: inline-block;
+      padding: 0.12rem 0.4rem;
+      border: 1px solid rgba(0, 0, 0, 0.25);
+      border-bottom-width: 2px;
+      border-radius: 0.4rem;
+      background: #fff;
+      color: #232323;
+      font-size: 1.4rem;
+      margin: 0 .1rem 0.1rem;
+      white-space: nowrap;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      background: rgba(255, 255, 255, 0.8);
+      font-weight: 700;
+      font-size: 0.85rem;
+      margin-left: 0.5rem;
+      vertical-align: middle;
+    }
+
+    .footer {
+      margin-top: 2.25rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(0, 0, 0, 0.12);
+      color: rgba(235, 235, 235, 0.65);
+      font-size: 0.95rem;
+    }
+
+    /* Cheat-specific styles: TK (intentionally blank placeholders) */
+    /* body.geocities { } */
+    /* body.konami-mode { } */
+    body.cheat-confidence {
+      transform: scale(1.4);
+    }

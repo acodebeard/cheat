@@ -1,40 +1,27 @@
-/* cheats.js
-   Multi-cheat key sequence detector with external toggles via window.CHEAT_CONFIG.
-*/
 document.addEventListener('DOMContentLoaded', () => {
-  const DEFAULT_CONFIG = {
-    enabled: {},
-    maxGapMs: 2000
-  };
-
-  const CONFIG = Object.assign({}, DEFAULT_CONFIG, window.CHEAT_CONFIG || {});
-  const ENABLED = CONFIG.enabled || {};
-  const MAX_GAP_MS = Number(CONFIG.maxGapMs) > 0 ? Number(CONFIG.maxGapMs) : 2000;
-
   const cheats = [
     {
       name: 'confidence',
+      bodyClass: 'cheat-confidence',
       sequence: [
         'ArrowLeft', 'ArrowLeft',
         'ArrowRight', 'ArrowRight',
         'ArrowUp', 'ArrowUp',
         'ArrowDown', 'ArrowDown'
       ],
-      onMatch: () => {
-        alert('CHEAT UNLOCKED: +10 confidence. / +0 imposter syndrome.');
-      }
+      onEnable: () => alert('CHEAT ON: +10 confidence. / +0 imposter syndrome.'),
+      onDisable: () => alert('CHEAT OFF: Confidence mode disabled.')
     },
     {
       name: 'geocities',
+      bodyClass: 'cheat-geocities',
       sequence: ['g', 'e', 'o', 'c', 'i', 't', 'i', 'e', 's'],
-      onMatch: () => {
-        document.body.classList.add('geocities');
-        alert('CHEAT UNLOCKED: Welcome to the GeoCities zone.');
-      }
+      onEnable: () => alert('CHEAT ON: Welcome to the GeoCities zone.'),
+      onDisable: () => alert('CHEAT OFF: GeoCities zone disabled.')
     },
     {
-      // Third cheat: the classic Konami code (but kept separate from your confidence one)
       name: 'konami',
+      bodyClass: 'cheat-konami',
       sequence: [
         'ArrowUp', 'ArrowUp',
         'ArrowDown', 'ArrowDown',
@@ -42,24 +29,17 @@ document.addEventListener('DOMContentLoaded', () => {
         'ArrowLeft', 'ArrowRight',
         'b', 'a'
       ],
-      onMatch: () => {
-        document.body.classList.toggle('konami-mode');
-        alert('CHEAT UNLOCKED: Konami mode toggled.');
-      }
+      onEnable: () => alert('CHEAT ON: Konami mode toggled on.'),
+      onDisable: () => alert('CHEAT OFF: Konami mode toggled off.')
     }
   ];
 
-  // Filter to only enabled cheats (config-driven)
-  const activeCheats = cheats.filter((c) => ENABLED[c.name] !== false);
-
-  // Nothing enabled? Stop cleanly.
-  if (!activeCheats.length) return;
-
-  const cheatStates = activeCheats.map(() => ({ index: 0 }));
+  const cheatStates = cheats.map(() => ({ index: 0 }));
   let lastKeyTime = 0;
+  const MAX_GAP_MS = 2000;
 
-  function resetAll() {
-    cheatStates.forEach((s) => { s.index = 0; });
+  function reset() {
+    cheatStates.forEach((state) => { state.index = 0; });
     lastKeyTime = 0;
   }
 
@@ -80,6 +60,24 @@ document.addEventListener('DOMContentLoaded', () => {
     return '';
   }
 
+  function toggleCheat(cheat) {
+    const cls = cheat.bodyClass;
+    if (!cls) return;
+
+    const isOn = document.body.classList.contains(cls);
+
+    if (isOn) {
+      document.body.classList.remove(cls);
+      if (typeof cheat.onDisable === 'function') cheat.onDisable();
+      else alert('CHEAT OFF');
+      return;
+    }
+
+    document.body.classList.add(cls);
+    if (typeof cheat.onEnable === 'function') cheat.onEnable();
+    else alert('CHEAT ON');
+  }
+
   document.addEventListener('keydown', (e) => {
     if (isTypingTarget(e.target)) return;
 
@@ -87,13 +85,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!normalizedKey) return;
 
     const now = Date.now();
-
     if (lastKeyTime && (now - lastKeyTime) > MAX_GAP_MS) {
-      resetAll();
+      reset();
     }
     lastKeyTime = now;
 
-    activeCheats.forEach((cheat, cheatIndex) => {
+    cheats.forEach((cheat, cheatIndex) => {
       const state = cheatStates[cheatIndex];
       const expectedKey = cheat.sequence[state.index];
 
@@ -102,12 +99,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (state.index === cheat.sequence.length) {
           state.index = 0;
-          cheat.onMatch();
+          toggleCheat(cheat);
         }
         return;
       }
 
-      // Nice UX: if they press the first key, keep partial progress
       if (normalizedKey === cheat.sequence[0]) {
         state.index = 1;
         return;

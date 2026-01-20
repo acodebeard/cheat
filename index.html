@@ -7,110 +7,7 @@
   <title>Cheat Codes — Tiny JS Easter Eggs</title>
   <meta name="description"
     content="A tiny, dependency-free JavaScript cheat-code detector (for fun and GitHub practice).">
-
-  <style>
-    :root {
-      color-scheme: dark;
-    }
-
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-      line-height: 1.5;
-      background: #fff;
-      color: #111;
-    }
-
-    .wrap {
-      max-width: 60rem;
-      margin: 0 auto;
-      padding: 2.5rem 1rem;
-    }
-
-    header {
-      margin-bottom: 1.5rem;
-    }
-
-    h1 {
-      margin: 0 0 0.5rem;
-      font-size: 2rem;
-      line-height: 1.15;
-      letter-spacing: -0.02em;
-    }
-
-    .muted {
-      color: rgba(0, 0, 0, 0.65);
-      margin: 0;
-    }
-
-    .card {
-      margin-top: 1.5rem;
-      border: 1px solid rgba(0, 0, 0, 0.12);
-      border-radius: 1rem;
-      padding: 1rem;
-      background: rgba(0, 0, 0, 0.02);
-    }
-
-    h2 {
-      margin: 0 0 0.75rem;
-      font-size: 1.25rem;
-      line-height: 1.2;
-    }
-
-    ul {
-      margin: 0;
-      padding-left: 1.25rem;
-    }
-
-    li {
-      margin: 0.6rem 0;
-    }
-
-    .code-name {
-      font-weight: 800;
-    }
-
-    code,
-    kbd {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size: 0.95em;
-    }
-
-    kbd {
-      display: inline-block;
-      padding: 0.12rem 0.4rem;
-      border: 1px solid rgba(0, 0, 0, 0.25);
-      border-bottom-width: 2px;
-      border-radius: 0.4rem;
-      background: #fff;
-      margin: 0 0.1rem;
-      white-space: nowrap;
-    }
-
-    .pill {
-      display: inline-block;
-      padding: 0.2rem 0.55rem;
-      border-radius: 999px;
-      border: 1px solid rgba(0, 0, 0, 0.15);
-      background: rgba(255, 255, 255, 0.8);
-      font-weight: 700;
-      font-size: 0.85rem;
-      margin-left: 0.5rem;
-      vertical-align: middle;
-    }
-
-    .footer {
-      margin-top: 2.25rem;
-      padding-top: 1rem;
-      border-top: 1px solid rgba(0, 0, 0, 0.12);
-      color: rgba(0, 0, 0, 0.65);
-      font-size: 0.95rem;
-    }
-
-    /* Cheat-specific styles: TK (intentionally blank placeholders) */
-    /* body.geocities { } */
-    /* body.konami-mode { } */
-  </style>
+<link href="./style.css" rel="stylesheet" type="text/css">
 </head>
 
 <body>
@@ -125,7 +22,7 @@
         Try typing the sequences below anywhere on the page (except while focused inside a form field).
       </p>
     </header>
-
+    <main>
     <section class="card" aria-labelledby="included-codes">
       <h2 id="included-codes">Included codes <span class="pill">v1</span></h2>
 
@@ -150,14 +47,15 @@
         Tip: enable/disable codes in <code>cheats.config.js</code> without touching the main script.
       </p>
     </section>
+    </main>
 
-    <div class="footer">
+    <footer class="footer">
       <p style="margin: 0;">
         This page is intentionally minimal. Cheat-specific styling hooks are reserved for later.
       </p>
-    </div>
-  </div>
+    </footer>
 
+</div>
   <!-- Load config first, then main script -->
   <script src="./cheat.config.js"></script>
   <script src="./cheat.js"></script>
