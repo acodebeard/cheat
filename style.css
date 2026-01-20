@@ -1,7 +1,9 @@
 :root {
       color-scheme: dark;
     }
-
+html {
+  background: #1a1919;
+}
     body {
       margin: 0;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
@@ -65,8 +67,9 @@
 
     code,
     kbd {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace !important;
       font-size: 0.95em;
+      text-transform: lowercase;
     }
 
     kbd {
@@ -108,7 +111,7 @@
     }
     /* body.konami-mode { } */
     body.cheat-confidence {
-      transform: scale(1.4);
+      scale:1.4;
     }
     /* Konami mode: animated scanlines + subtle vignette */
 body.cheat-konami {
@@ -179,23 +182,28 @@ body.cheat-konami::after {
 @keyframes drunk {
   0% {
     filter:blur(0.1px);
-    transform: translateX(-1px);
+    transform: translateX(1px);
+    
   }
   22% {
     filter: blur(1px);
-    transform: translateX(1px);
+    transform: translateX(-1px);
+    
   }
   44% {
     filter: blur(4px);
-    transform: translateX(0px);
+    transform: translateX(2px);
+   
   }
   77% {
     filter: blur(1px);
-    transform: translateX(1px);
+    transform: translateX(-2px);
+  
   }
   100% {
     filter: blur(0);
-    transform: translateX(-1px);
+    transform: translateX(1px);
+   
   }
 }
 body.cheat-drunk {
