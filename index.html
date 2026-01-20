@@ -1,88 +1,166 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Cheat Codes Demo</title>
-    <style>
-      :root {
-        color-scheme: light;
-        font-family: "Comic Sans MS", "Comic Sans", cursive;
-        background: #f4f4f4;
-      }
 
-      body {
-        margin: 0;
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(135deg, #f4f4f4 0%, #fdf0ff 100%);
-        color: #1a1a1a;
-      }
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cheat Codes — Tiny JS Easter Eggs</title>
+  <meta name="description"
+    content="A tiny, dependency-free JavaScript cheat-code detector (for fun and GitHub practice).">
 
-      main {
-        max-width: 720px;
-        padding: 2.5rem 3rem;
-        background: #ffffff;
-        border-radius: 24px;
-        box-shadow: 0 20px 50px rgba(19, 19, 40, 0.15);
-      }
+  <style>
+    :root {
+      color-scheme: dark;
+    }
 
-      h1 {
-        margin-top: 0;
-        font-size: 2.4rem;
-      }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      line-height: 1.5;
+      background: #fff;
+      color: #111;
+    }
 
-      ul {
-        padding-left: 1.2rem;
-      }
+    .wrap {
+      max-width: 60rem;
+      margin: 0 auto;
+      padding: 2.5rem 1rem;
+    }
 
-      .cheat {
-        display: inline-block;
-        padding: 0.1rem 0.4rem;
-        border-radius: 8px;
-        background: #f0eaff;
-        font-weight: 700;
-      }
+    header {
+      margin-bottom: 1.5rem;
+    }
 
-      body.geocities {
-        background: repeating-linear-gradient(45deg, #ffccf9, #ffccf9 20px, #c9faff 20px, #c9faff 40px);
-        color: #0a0057;
-      }
+    h1 {
+      margin: 0 0 0.5rem;
+      font-size: 2rem;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+    }
 
-      body.geocities main {
-        border: 5px double #ff00aa;
-        box-shadow: 0 0 30px rgba(255, 0, 170, 0.5);
-      }
+    .muted {
+      color: rgba(0, 0, 0, 0.65);
+      margin: 0;
+    }
 
-      body.geocities h1 {
-        text-shadow: 2px 2px 0 #ffe600;
-      }
+    .card {
+      margin-top: 1.5rem;
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      border-radius: 1rem;
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.02);
+    }
 
-      footer {
-        margin-top: 2rem;
-        font-size: 0.95rem;
-        color: #555;
-      }
-    </style>
-  </head>
-  <body>
-    <main>
-      <h1>Cheat Codes Playground</h1>
-      <p>Try the cheat codes below anywhere on the page:</p>
+    h2 {
+      margin: 0 0 0.75rem;
+      font-size: 1.25rem;
+      line-height: 1.2;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 1.25rem;
+    }
+
+    li {
+      margin: 0.6rem 0;
+    }
+
+    .code-name {
+      font-weight: 800;
+    }
+
+    code,
+    kbd {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 0.95em;
+    }
+
+    kbd {
+      display: inline-block;
+      padding: 0.12rem 0.4rem;
+      border: 1px solid rgba(0, 0, 0, 0.25);
+      border-bottom-width: 2px;
+      border-radius: 0.4rem;
+      background: #fff;
+      margin: 0 0.1rem;
+      white-space: nowrap;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      background: rgba(255, 255, 255, 0.8);
+      font-weight: 700;
+      font-size: 0.85rem;
+      margin-left: 0.5rem;
+      vertical-align: middle;
+    }
+
+    .footer {
+      margin-top: 2.25rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(0, 0, 0, 0.12);
+      color: rgba(0, 0, 0, 0.65);
+      font-size: 0.95rem;
+    }
+
+    /* Cheat-specific styles: TK (intentionally blank placeholders) */
+    /* body.geocities { } */
+    /* body.konami-mode { } */
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Cheat Codes</h1>
+      <p class="muted">
+        A tiny, dependency-free JavaScript cheat-code detector. This is a fun side project for
+        learning and practicing better GitHub habits.
+      </p>
+      <p class="muted" style="margin-top: 0.75rem;">
+        Try typing the sequences below anywhere on the page (except while focused inside a form field).
+      </p>
+    </header>
+
+    <section class="card" aria-labelledby="included-codes">
+      <h2 id="included-codes">Included codes <span class="pill">v1</span></h2>
+
       <ul>
         <li>
-          <span class="cheat">⬅⬅➡➡⬆⬆⬇⬇</span> for the confidence boost.
+          <span class="code-name">confidence</span> —
+          <kbd>←</kbd><kbd>←</kbd><kbd>→</kbd><kbd>→</kbd><kbd>↑</kbd><kbd>↑</kbd><kbd>↓</kbd><kbd>↓</kbd>
         </li>
+
         <li>
-          <span class="cheat">geocities</span> for a retro web makeover.
+          <span class="code-name">geocities</span> —
+          <kbd>g</kbd><kbd>e</kbd><kbd>o</kbd><kbd>c</kbd><kbd>i</kbd><kbd>t</kbd><kbd>i</kbd><kbd>e</kbd><kbd>s</kbd>
+        </li>
+
+        <li>
+          <span class="code-name">konami</span> —
+          <kbd>↑</kbd><kbd>↑</kbd><kbd>↓</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd><kbd>←</kbd><kbd>→</kbd><kbd>b</kbd><kbd>a</kbd>
         </li>
       </ul>
-      <footer>
-        Tip: Make sure your focus is not inside a text input so the cheat codes can be captured.
-      </footer>
-    </main>
-    <script src="./cheat.js"></script>
-  </body>
+
+      <p class="muted" style="margin-top: 1rem;">
+        Tip: enable/disable codes in <code>cheats.config.js</code> without touching the main script.
+      </p>
+    </section>
+
+    <div class="footer">
+      <p style="margin: 0;">
+        This page is intentionally minimal. Cheat-specific styling hooks are reserved for later.
+      </p>
+    </div>
+  </div>
+
+  <!-- Load config first, then main script -->
+  <script src="./cheat.config.js"></script>
+  <script src="./cheat.js"></script>
+</body>
+
 </html>
