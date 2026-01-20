@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cheat Codes Demo</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: "Comic Sans MS", "Comic Sans", cursive;
+        background: #f4f4f4;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #f4f4f4 0%, #fdf0ff 100%);
+        color: #1a1a1a;
+      }
+
+      main {
+        max-width: 720px;
+        padding: 2.5rem 3rem;
+        background: #ffffff;
+        border-radius: 24px;
+        box-shadow: 0 20px 50px rgba(19, 19, 40, 0.15);
+      }
+
+      h1 {
+        margin-top: 0;
+        font-size: 2.4rem;
+      }
+
+      ul {
+        padding-left: 1.2rem;
+      }
+
+      .cheat {
+        display: inline-block;
+        padding: 0.1rem 0.4rem;
+        border-radius: 8px;
+        background: #f0eaff;
+        font-weight: 700;
+      }
+
+      body.geocities {
+        background: repeating-linear-gradient(45deg, #ffccf9, #ffccf9 20px, #c9faff 20px, #c9faff 40px);
+        color: #0a0057;
+      }
+
+      body.geocities main {
+        border: 5px double #ff00aa;
+        box-shadow: 0 0 30px rgba(255, 0, 170, 0.5);
+      }
+
+      body.geocities h1 {
+        text-shadow: 2px 2px 0 #ffe600;
+      }
+
+      footer {
+        margin-top: 2rem;
+        font-size: 0.95rem;
+        color: #555;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Cheat Codes Playground</h1>
+      <p>Try the cheat codes below anywhere on the page:</p>
+      <ul>
+        <li>
+          <span class="cheat">⬅⬅➡➡⬆⬆⬇⬇</span> for the confidence boost.
+        </li>
+        <li>
+          <span class="cheat">geocities</span> for a retro web makeover.
+        </li>
+      </ul>
+      <footer>
+        Tip: Make sure your focus is not inside a text input so the cheat codes can be captured.
+      </footer>
+    </main>
+    <script src="./cheat.js"></script>
+  </body>
+</html>

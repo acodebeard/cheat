@@ -1,21 +1,39 @@
   document.addEventListener('DOMContentLoaded', () => {
-    // Cheat-code sequence:
-    // left, left, right, right, up, up, down, down
-    const cheatSequence = [
-      'ArrowLeft', 'ArrowLeft',
-      'ArrowRight', 'ArrowRight',
-      'ArrowUp', 'ArrowUp',
-      'ArrowDown', 'ArrowDown'
+    const cheats = [
+      {
+        name: 'confidence',
+        sequence: [
+          'ArrowLeft', 'ArrowLeft',
+          'ArrowRight', 'ArrowRight',
+          'ArrowUp', 'ArrowUp',
+          'ArrowDown', 'ArrowDown'
+        ],
+        onMatch: () => {
+          alert('CHEAT UNLOCKED: +10 confidence. / +0 imposter syndrome.');
+        }
+      },
+      {
+        name: 'geocities',
+        sequence: [
+          'g', 'e', 'o', 'c', 'i', 't', 'i', 'e', 's'
+        ],
+        onMatch: () => {
+          document.body.classList.add('geocities');
+          alert('CHEAT UNLOCKED: Welcome to the GeoCities zone.');
+        }
+      }
     ];
 
-    let index = 0;
+    const cheatStates = cheats.map(() => ({ index: 0 }));
     let lastKeyTime = 0;
 
     // Optional: time window (ms) — if they pause too long, reset.
     const MAX_GAP_MS = 2000;
 
     function reset() {
-      index = 0;
+      cheatStates.forEach((state) => {
+        state.index = 0;
+      });
       lastKeyTime = 0;
     }
 
@@ -31,8 +49,13 @@
 
       if (isTypingTarget) return;
 
-      // Only care about arrow keys
-      if (!e.key || !e.key.startsWith('Arrow')) return;
+      if (!e.key) return;
+
+      const normalizedKey = e.key.startsWith('Arrow')
+        ? e.key
+        : (e.key.length === 1 ? e.key.toLowerCase() : '');
+
+      if (!normalizedKey) return;
 
       const now = Date.now();
 
@@ -42,27 +65,27 @@
       }
       lastKeyTime = now;
 
-      // Check current key against expected sequence
-      if (e.key === cheatSequence[index]) {
-        index += 1;
+      cheats.forEach((cheat, cheatIndex) => {
+        const state = cheatStates[cheatIndex];
+        const expectedKey = cheat.sequence[state.index];
 
-        // Completed!
-        if (index === cheatSequence.length) {
-          reset();
+        if (normalizedKey === expectedKey) {
+          state.index += 1;
 
-          alert('CHEAT UNLOCKED: +10 confidence. / +0 imposter syndrome.');
+          if (state.index === cheat.sequence.length) {
+            state.index = 0;
+            cheat.onMatch();
+          }
+
+          return;
         }
 
-        return;
-      }
+        if (normalizedKey === cheat.sequence[0]) {
+          state.index = 1;
+          return;
+        }
 
-      // Mismatch: if this key matches the first item, restart at 1, otherwise reset
-      if (e.key === cheatSequence[0]) {
-        index = 1;
-        return;
-      }
-
-      reset();
+        state.index = 0;
+      });
     });
   });
-
