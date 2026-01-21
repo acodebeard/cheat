@@ -106,7 +106,7 @@ html {
     }
 
     /* Cheat-specific styles: TK (intentionally blank placeholders) */
-    body.cheat-geocities *{ 
+    body.cheat-geocities *:not(kbd){ 
       font-family: 'Comic Sans MS', 'Comic Relief', fantasy !important;
     }
     /* body.konami-mode { } */
