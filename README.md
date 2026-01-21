@@ -14,10 +14,7 @@ It listens for key sequences (like old video game cheat codes) and triggers a ca
 
 ## Files
 
-- `cheats.js` — main cheat-code engine
-- `cheats.config.js` — enable/disable cheats + global settings
-- `index.html` — optional demo page (if included)
-
-## Setup
-
-Include the config first, then the main script:
+- `cheat.js` — main cheat-code engine
+- `cheat.config.js` — enable/disable cheats + global settings
+- `cheat.data.js` — Cheat rules
+- `index.html` — optional demo page
