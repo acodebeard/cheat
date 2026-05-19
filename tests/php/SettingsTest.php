@@ -78,7 +78,7 @@ final class SettingsTest extends TestCase {
         $this->assertSame( $presets['confidence']['default_sequence'], $sanitized['presets']['confidence']['sequence'] );
     }
 
-    public function test_sanitize_treats_absent_submitted_checkboxes_as_false(): void {
+    public function test_sanitize_uses_defaults_for_missing_values(): void {
         $settings  = new CheatJS_Settings();
         $sanitized = $settings->sanitize( [
             'presets' => [
@@ -87,10 +87,37 @@ final class SettingsTest extends TestCase {
                 ],
             ],
         ] );
+        $presets   = CheatJS_Presets::get_presets();
+
+        $this->assertTrue( $sanitized['global_enabled'] );
+        $this->assertSame( $presets['konami']['default_enabled'], $sanitized['presets']['konami']['enabled'] );
+        $this->assertSame( [ 'a' ], $sanitized['presets']['konami']['sequence'] );
+    }
+
+    public function test_sanitize_keeps_explicit_false_values_false(): void {
+        $settings  = new CheatJS_Settings();
+        $sanitized = $settings->sanitize( [
+            'global_enabled' => '0',
+            'presets'        => [
+                'konami'     => [
+                    'enabled'  => '0',
+                    'sequence' => 'up',
+                ],
+                'confidence' => [
+                    'enabled'  => false,
+                    'sequence' => 'c',
+                ],
+                'geocities'  => [
+                    'enabled'  => 0,
+                    'sequence' => 'g',
+                ],
+            ],
+        ] );
 
         $this->assertFalse( $sanitized['global_enabled'] );
         $this->assertFalse( $sanitized['presets']['konami']['enabled'] );
-        $this->assertSame( [ 'a' ], $sanitized['presets']['konami']['sequence'] );
+        $this->assertFalse( $sanitized['presets']['confidence']['enabled'] );
+        $this->assertFalse( $sanitized['presets']['geocities']['enabled'] );
     }
 
     public function test_invalid_keys_are_removed_when_at_least_one_valid_key_remains(): void {

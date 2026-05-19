@@ -35,11 +35,11 @@ final class CheatJS_Settings {
             return $this->get_defaults();
         }
 
-        return $this->normalize( $stored, false );
+        return $this->normalize( $stored );
     }
 
     public function sanitize( $input ): array {
-        return $this->normalize( $input, true );
+        return $this->normalize( $input );
     }
 
     public function get_active_presets(): array {
@@ -78,14 +78,14 @@ final class CheatJS_Settings {
         update_option( self::OPTION_NAME, $this->get_defaults() );
     }
 
-    private function normalize( $input, bool $submitted ): array {
+    private function normalize( $input ): array {
         $input    = is_array( $input ) ? $input : [];
         $defaults = $this->get_defaults();
         $settings = $defaults;
 
         $settings['global_enabled'] = array_key_exists( 'global_enabled', $input )
             ? $this->to_boolean( $input['global_enabled'] )
-            : ( $submitted ? false : $defaults['global_enabled'] );
+            : $defaults['global_enabled'];
 
         if ( array_key_exists( 'max_gap_ms', $input ) ) {
             $max_gap_ms = absint( $input['max_gap_ms'] );
@@ -119,7 +119,7 @@ final class CheatJS_Settings {
             $settings['presets'][ $id ] = [
                 'enabled'  => array_key_exists( 'enabled', $preset_input )
                     ? $this->to_boolean( $preset_input['enabled'] )
-                    : ( $submitted ? false : $preset['default_enabled'] ),
+                    : $preset['default_enabled'],
                 'sequence' => $sequence,
             ];
         }
