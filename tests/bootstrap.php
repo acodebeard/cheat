@@ -11,26 +11,45 @@ $GLOBALS['cheatjs_test_assets'] = [
 ];
 
 function add_filter( $hook, $callback, $priority = 10, $accepted_args = 1 ) {
-    $GLOBALS['cheatjs_test_filters'][ $hook ][ $priority ][] = $callback;
+    $GLOBALS['cheatjs_test_filters'][ $hook ][ $priority ][] = [
+        'callback'      => $callback,
+        'accepted_args' => $accepted_args,
+    ];
     return true;
 }
 
-function apply_filters( $hook, $value ) {
+function apply_filters( $hook, $value, ...$args ) {
     if ( empty( $GLOBALS['cheatjs_test_filters'][ $hook ] ) ) {
         return $value;
     }
     ksort( $GLOBALS['cheatjs_test_filters'][ $hook ] );
     foreach ( $GLOBALS['cheatjs_test_filters'][ $hook ] as $callbacks ) {
-        foreach ( $callbacks as $callback ) {
-            $value = call_user_func( $callback, $value );
+        foreach ( $callbacks as $filter ) {
+            $filter_args = array_slice( array_merge( [ $value ], $args ), 0, $filter['accepted_args'] );
+            $value = call_user_func_array( $filter['callback'], $filter_args );
         }
     }
     return $value;
 }
 
 function add_action( $hook, $callback, $priority = 10, $accepted_args = 1 ) {
-    $GLOBALS['cheatjs_test_actions'][ $hook ][] = $callback;
+    $GLOBALS['cheatjs_test_actions'][ $hook ][ $priority ][] = [
+        'callback'      => $callback,
+        'accepted_args' => $accepted_args,
+    ];
     return true;
+}
+
+function do_action( $hook, ...$args ) {
+    if ( empty( $GLOBALS['cheatjs_test_actions'][ $hook ] ) ) {
+        return;
+    }
+    ksort( $GLOBALS['cheatjs_test_actions'][ $hook ] );
+    foreach ( $GLOBALS['cheatjs_test_actions'][ $hook ] as $callbacks ) {
+        foreach ( $callbacks as $action ) {
+            call_user_func_array( $action['callback'], array_slice( $args, 0, $action['accepted_args'] ) );
+        }
+    }
 }
 
 function get_option( $name, $default = false ) {
