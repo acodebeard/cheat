@@ -30,4 +30,20 @@ final class KeysTest extends TestCase {
             CheatJS_Keys::parse_sequence( 'up, arrowup down B A' )
         );
     }
+
+    public function test_nested_sequence_array_values_are_ignored_without_warning(): void {
+        set_error_handler(
+            static function ( int $severity, string $message, string $file, int $line ): bool {
+                throw new ErrorException( $message, 0, $severity, $file, $line );
+            }
+        );
+
+        try {
+            $sequence = CheatJS_Keys::parse_sequence( [ 'up', [ 'nested' => 'bad' ], 'A' ] );
+        } finally {
+            restore_error_handler();
+        }
+
+        $this->assertSame( [ 'ArrowUp', 'a' ], $sequence );
+    }
 }

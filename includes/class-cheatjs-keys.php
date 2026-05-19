@@ -54,6 +54,10 @@ final class CheatJS_Keys {
         $sequence = [];
 
         foreach ( $tokens as $token ) {
+            if ( ! is_scalar( $token ) ) {
+                continue;
+            }
+
             $key = self::normalize_key( $token );
             if ( $key !== '' ) {
                 $sequence[] = $key;
