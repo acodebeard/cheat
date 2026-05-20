@@ -70,6 +70,7 @@ final class CheatJS_Admin {
 
                 <section class="cheatjs-admin-section">
                     <h2><?php echo esc_html( 'Global Settings' ); ?></h2>
+                    <input type="hidden" name="<?php echo esc_attr( CheatJS_Settings::OPTION_NAME ); ?>[max_gap_ms]" value="<?php echo esc_attr( $settings['max_gap_ms'] ); ?>">
                     <label class="cheatjs-toggle">
                         <input type="hidden" name="<?php echo esc_attr( CheatJS_Settings::OPTION_NAME ); ?>[global_enabled]" value="0">
                         <input type="checkbox" name="<?php echo esc_attr( CheatJS_Settings::OPTION_NAME ); ?>[global_enabled]" value="1"<?php checked( ! empty( $settings['global_enabled'] ) ); ?>>

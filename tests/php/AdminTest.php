@@ -74,6 +74,19 @@ final class AdminTest extends TestCase {
         $this->assertStringContainsString( '<span class="cheatjs-key-chip">a</span>', $html );
     }
 
+    public function test_render_page_preserves_current_max_gap_ms_as_hidden_input(): void {
+        update_option( CheatJS_Settings::OPTION_NAME, [
+            'global_enabled' => '1',
+            'max_gap_ms'     => '3500',
+        ] );
+
+        ob_start();
+        $this->create_admin()->render_page();
+        $html = ob_get_clean();
+
+        $this->assertStringContainsString( 'type="hidden" name="cheatjs_settings[max_gap_ms]" value="3500"', $html );
+    }
+
     public function test_register_settings_registers_option_with_settings_sanitizer(): void {
         $admin = $this->create_admin();
 
