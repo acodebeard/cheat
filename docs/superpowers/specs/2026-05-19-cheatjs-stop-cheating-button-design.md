@@ -13,8 +13,16 @@ Add a small fixed viewport control labeled `Stop cheating` that appears only whi
 - No button is rendered on normal page load.
 - When any configured cheat sequence activates a preset, CheatJS shows a fixed side button labeled `Stop cheating`.
 - If additional cheats are activated while the button is visible, the same button stays visible.
-- Clicking the button removes every active preset body class, resets CheatJS active state, shows a short notice such as `Cheating stopped.`, and removes the button.
+- Clicking the button removes every active preset body class, resets CheatJS active state, shows one random joke notice, and removes the button.
 - If the user toggles the last active cheat off by re-entering its sequence, the button disappears.
+
+The stop notice should match the plugin's joke tone. The initial message pool will be:
+
+- `good. cheating is wrong.`
+- `it's stopped, but i'm telling on you.`
+- `fine. your secret is safe-ish.`
+- `cheating canceled. character restored.`
+- `the evidence has been hidden poorly.`
 
 ## Frontend Architecture
 
@@ -27,7 +35,9 @@ The button click handler will:
 1. Remove every active preset body class from `document.body`.
 2. Clear the active set.
 3. Remove the button.
-4. Show a safe text notice.
+4. Pick one stop message at random and show it as a safe text notice.
+
+The stop message pool will be a small hardcoded frontend array. It will not be configurable in the admin for this version.
 
 `destroy()` will remove the keydown listener, clear sequence progress, remove the button, and remove active body classes known to this detector. This keeps tests and repeated initialization clean.
 
@@ -48,6 +58,7 @@ JavaScript tests will cover:
 - The button is absent before any cheat activates.
 - Activating a cheat creates one button labeled `Stop cheating`.
 - Clicking the button removes active body classes and removes the button.
+- Clicking the button shows one message from the joke stop-message pool.
 - Multiple active cheats are all cleared by one click.
 - Re-entering the last active cheat sequence removes the button.
 - `destroy()` removes the button and active classes.
