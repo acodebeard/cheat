@@ -117,6 +117,14 @@ body.cheatjs-soft-blur {
     --cheatjs-hue: hue-rotate(0deg);
   }
 
+  33% {
+    --cheatjs-hue: hue-rotate(120deg);
+  }
+
+  66% {
+    --cheatjs-hue: hue-rotate(240deg);
+  }
+
   100% {
     --cheatjs-hue: hue-rotate(360deg);
   }

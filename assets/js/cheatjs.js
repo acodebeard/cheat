@@ -4,7 +4,7 @@
   var ARROW_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
   var DEFAULT_MAX_GAP_MS = 2000;
   var NOTICE_TIMEOUT_MS = 2400;
-  var autoController = null;
+  var AUTO_CONTROLLER_KEY = 'CHEATJS_AUTO_CONTROLLER';
 
   function normalizeKey(key) {
     if (typeof key !== 'string') {
@@ -161,11 +161,11 @@
   }
 
   function initWhenReady() {
-    if (!window.CHEATJS_CONFIG || autoController) {
+    if (!window.CHEATJS_CONFIG || window[AUTO_CONTROLLER_KEY]) {
       return;
     }
 
-    autoController = init(window.CHEATJS_CONFIG, window.document);
+    window[AUTO_CONTROLLER_KEY] = init(window.CHEATJS_CONFIG, window.document);
   }
 
   window.CheatJS = {

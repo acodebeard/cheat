@@ -44,6 +44,7 @@ describe('CheatJS frontend detector', () => {
     document.head.innerHTML = '';
     delete window.CheatJS;
     delete window.CHEATJS_CONFIG;
+    delete window.CHEATJS_AUTO_CONTROLLER;
     Object.defineProperty(document, 'readyState', {
       configurable: true,
       value: 'complete',
@@ -248,6 +249,19 @@ describe('CheatJS frontend detector', () => {
     expect(document.body.classList.contains('cheatjs-already-ready')).toBe(true);
   });
 
+  it('auto-initializes only once when the script is evaluated repeatedly', () => {
+    window.CHEATJS_CONFIG = {
+      maxGapMs: 2000,
+      presets: [preset({ bodyClass: 'cheatjs-single-auto-bind', sequence: ['a'] })],
+    };
+
+    loadCheatJS();
+    loadCheatJS();
+    press('a');
+
+    expect(document.body.classList.contains('cheatjs-single-auto-bind')).toBe(true);
+  });
+
   it('defines composable aggregate CSS for filter and transform effects', () => {
     const css = loadEffects();
 
@@ -258,5 +272,13 @@ describe('CheatJS frontend detector', () => {
     expect(css).not.toMatch(/body\.cheatjs-grayscale\s*\{[^}]*filter:/);
     expect(css).not.toMatch(/body\.cheatjs-high-contrast\s*\{[^}]*filter:/);
     expect(css).not.toMatch(/body\.cheatjs-upside-down\s*\{[^}]*transform:/);
+  });
+
+  it('defines visibly distinct disco hue keyframes and disables animation for reduced motion', () => {
+    const css = loadEffects();
+
+    expect(css).toMatch(/@keyframes cheatjs-disco[\s\S]*--cheatjs-hue:\s*hue-rotate\(120deg\)/);
+    expect(css).toMatch(/@keyframes cheatjs-disco[\s\S]*--cheatjs-hue:\s*hue-rotate\(240deg\)/);
+    expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\)[\s\S]*body\.cheatjs-disco[\s\S]*animation:\s*none/);
   });
 });
