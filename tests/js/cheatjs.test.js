@@ -222,6 +222,9 @@ describe('CheatJS frontend detector', () => {
     };
 
     loadCheatJS();
+    press('a');
+    expect(document.body.classList.contains('cheatjs-dom-ready')).toBe(false);
+
     document.dispatchEvent(new Event('DOMContentLoaded'));
     press('a');
 
