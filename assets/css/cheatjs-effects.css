@@ -1,3 +1,19 @@
+body {
+  --cheatjs-blur: blur(0);
+  --cheatjs-contrast: contrast(1);
+  --cheatjs-grayscale: grayscale(0);
+  --cheatjs-hue: hue-rotate(0deg);
+  --cheatjs-rotate: 0deg;
+  --cheatjs-translate-x: 0;
+  --cheatjs-scale: 1;
+}
+
+body[class*="cheatjs-"] > :not(.cheatjs-notice) {
+  filter: var(--cheatjs-grayscale) var(--cheatjs-contrast) var(--cheatjs-blur) var(--cheatjs-hue);
+  transform: rotate(var(--cheatjs-rotate)) translateX(var(--cheatjs-translate-x)) scale(var(--cheatjs-scale));
+  transform-origin: 50% 2rem;
+}
+
 .cheatjs-notice {
   position: fixed;
   right: 1rem;
@@ -14,10 +30,11 @@
 }
 
 body.cheatjs-confidence {
+  --cheatjs-scale: 1.04;
   cursor: crosshair;
 }
 
-body.cheatjs-confidence * {
+body.cheatjs-confidence > :not(.cheatjs-notice) {
   text-transform: uppercase;
 }
 
@@ -35,7 +52,7 @@ body.cheatjs-geocities {
 
 body.cheatjs-geocities a {
   color: #ff00ff;
-  text-decoration: underline blink;
+  text-decoration: underline;
 }
 
 body.cheatjs-konami {
@@ -54,7 +71,6 @@ body.cheatjs-konami::before {
 
 body.cheatjs-drunk {
   animation: cheatjs-drunk 3.5s ease-in-out infinite;
-  transform-origin: 50% 2rem;
 }
 
 body.cheatjs-disco {
@@ -62,17 +78,17 @@ body.cheatjs-disco {
 }
 
 body.cheatjs-upside-down {
-  transform: rotate(180deg);
+  --cheatjs-rotate: 180deg;
 }
 
 body.cheatjs-grayscale {
-  filter: grayscale(1);
+  --cheatjs-grayscale: grayscale(1);
 }
 
 body.cheatjs-high-contrast {
+  --cheatjs-contrast: contrast(1.5);
   background: #000;
   color: #fff;
-  filter: contrast(1.5);
 }
 
 body.cheatjs-high-contrast a {
@@ -80,31 +96,29 @@ body.cheatjs-high-contrast a {
 }
 
 body.cheatjs-soft-blur {
-  filter: blur(2px);
-}
-
-body.cheatjs-soft-blur .cheatjs-notice {
-  filter: blur(0);
+  --cheatjs-blur: blur(2px);
 }
 
 @keyframes cheatjs-drunk {
   0%,
   100% {
-    transform: rotate(-1deg) translateX(-0.25rem);
+    --cheatjs-rotate: -1deg;
+    --cheatjs-translate-x: -0.25rem;
   }
 
   50% {
-    transform: rotate(1deg) translateX(0.25rem);
+    --cheatjs-rotate: 1deg;
+    --cheatjs-translate-x: 0.25rem;
   }
 }
 
 @keyframes cheatjs-disco {
   0% {
-    filter: hue-rotate(0deg) saturate(1.4);
+    --cheatjs-hue: hue-rotate(0deg);
   }
 
   100% {
-    filter: hue-rotate(360deg) saturate(1.4);
+    --cheatjs-hue: hue-rotate(360deg);
   }
 }
 

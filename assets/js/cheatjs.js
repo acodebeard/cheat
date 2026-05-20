@@ -177,6 +177,7 @@
 
   if (window.document) {
     if (window.document.readyState === 'loading') {
+      initWhenReady();
       window.document.addEventListener('DOMContentLoaded', initWhenReady, { once: true });
     } else {
       initWhenReady();
