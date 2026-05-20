@@ -9,6 +9,8 @@ $GLOBALS['cheatjs_test_assets'] = [
     'styles'  => [],
     'inline'  => [],
 ];
+$GLOBALS['cheatjs_test_registered_settings'] = [];
+$GLOBALS['cheatjs_test_options_pages'] = [];
 
 function add_filter( $hook, $callback, $priority = 10, $accepted_args = 1 ) {
     $GLOBALS['cheatjs_test_filters'][ $hook ][ $priority ][] = [
@@ -118,11 +120,13 @@ function current_user_can( $capability ) {
     return $capability === 'manage_options';
 }
 
-function add_options_page() {
+function add_options_page( $page_title = '', $menu_title = '', $capability = '', $menu_slug = '', $callback = null ) {
+    $GLOBALS['cheatjs_test_options_pages'][] = compact( 'page_title', 'menu_title', 'capability', 'menu_slug', 'callback' );
     return 'settings_page_cheatjs';
 }
 
-function register_setting() {
+function register_setting( $option_group = '', $option_name = '', $args = [] ) {
+    $GLOBALS['cheatjs_test_registered_settings'][] = compact( 'option_group', 'option_name', 'args' );
     return true;
 }
 

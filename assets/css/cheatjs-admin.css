@@ -1,0 +1,61 @@
+.cheatjs-admin {
+    max-width: 1040px;
+}
+
+.cheatjs-admin-section {
+    margin: 24px 0;
+}
+
+.cheatjs-presets {
+    display: grid;
+    gap: 16px;
+}
+
+.cheatjs-preset {
+    background: #fff;
+    border: 1px solid #dcdcde;
+    border-radius: 6px;
+    padding: 16px;
+}
+
+.cheatjs-preset-header {
+    align-items: flex-start;
+    display: flex;
+    gap: 16px;
+    justify-content: space-between;
+}
+
+.cheatjs-preset h3 {
+    margin: 0 0 6px;
+}
+
+.cheatjs-preset p {
+    margin: 0;
+}
+
+.cheatjs-toggle {
+    align-items: center;
+    display: inline-flex;
+    gap: 8px;
+}
+
+.cheatjs-key-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 14px 0;
+}
+
+.cheatjs-key-chip {
+    background: #f6f7f7;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    font-family: monospace;
+    padding: 4px 7px;
+}
+
+.cheatjs-preset-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
