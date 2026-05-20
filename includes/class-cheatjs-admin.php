@@ -58,6 +58,14 @@ final class CheatJS_Admin {
             [],
             $version
         );
+
+        wp_enqueue_script(
+            'cheatjs-admin',
+            $base_url . 'assets/js/cheatjs-admin.js',
+            [],
+            $version,
+            true
+        );
     }
 
     public function render_page(): void {
@@ -143,10 +151,10 @@ final class CheatJS_Admin {
             <?php $this->render_key_chips( $sequence ); ?>
 
             <div class="cheatjs-preset-actions">
-                <button type="button" class="cheatjs-record"><?php echo esc_html( 'Record' ); ?></button>
-                <button type="button" class="cheatjs-clear"><?php echo esc_html( 'Clear' ); ?></button>
-                <button type="button" class="cheatjs-reset"><?php echo esc_html( 'Reset default' ); ?></button>
-                <button type="button" class="cheatjs-done"><?php echo esc_html( 'Done' ); ?></button>
+                <button type="button" class="button cheatjs-record"><?php echo esc_html( 'Record' ); ?></button>
+                <button type="button" class="button cheatjs-clear"><?php echo esc_html( 'Clear' ); ?></button>
+                <button type="button" class="button cheatjs-reset"><?php echo esc_html( 'Reset default' ); ?></button>
+                <button type="button" class="button button-primary cheatjs-done"><?php echo esc_html( 'Done' ); ?></button>
             </div>
         </article>
         <?php

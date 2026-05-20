@@ -68,10 +68,10 @@ final class AdminTest extends TestCase {
         $this->assertStringContainsString( 'class="cheatjs-sequence-input"', $html );
         $this->assertStringContainsString( 'name="cheatjs_settings[presets][konami][sequence]"', $html );
         $this->assertStringContainsString( 'value="ArrowUp,ArrowUp,ArrowDown,ArrowDown,ArrowLeft,ArrowRight,ArrowLeft,ArrowRight,b,a"', $html );
-        $this->assertStringContainsString( 'class="cheatjs-record"', $html );
-        $this->assertStringContainsString( 'class="cheatjs-clear"', $html );
-        $this->assertStringContainsString( 'class="cheatjs-reset"', $html );
-        $this->assertStringContainsString( 'class="cheatjs-done"', $html );
+        $this->assertStringContainsString( 'class="button cheatjs-record"', $html );
+        $this->assertStringContainsString( 'class="button cheatjs-clear"', $html );
+        $this->assertStringContainsString( 'class="button cheatjs-reset"', $html );
+        $this->assertStringContainsString( 'class="button button-primary cheatjs-done"', $html );
         $this->assertStringContainsString( 'class="cheatjs-key-chips"', $html );
         $this->assertStringContainsString( '<span class="cheatjs-key-chip">ArrowUp</span>', $html );
         $this->assertStringContainsString( '<span class="cheatjs-key-chip">b</span>', $html );
@@ -138,16 +138,21 @@ final class AdminTest extends TestCase {
         $this->assertSame( [ $admin, 'render_page' ], $page['callback'] );
     }
 
-    public function test_enqueue_assets_only_enqueues_admin_css_for_cheatjs_settings_page(): void {
+    public function test_enqueue_assets_only_enqueues_admin_assets_for_cheatjs_settings_page(): void {
         $admin = $this->create_admin();
 
         $admin->enqueue_assets( 'settings_page_other' );
         $this->assertSame( [], $GLOBALS['cheatjs_test_assets']['styles'] );
+        $this->assertSame( [], $GLOBALS['cheatjs_test_assets']['scripts'] );
 
         $admin->enqueue_assets( 'settings_page_cheatjs' );
 
         $this->assertArrayHasKey( 'cheatjs-admin', $GLOBALS['cheatjs_test_assets']['styles'] );
         $this->assertStringEndsWith( 'assets/css/cheatjs-admin.css', $GLOBALS['cheatjs_test_assets']['styles']['cheatjs-admin']['src'] );
+        $this->assertArrayHasKey( 'cheatjs-admin', $GLOBALS['cheatjs_test_assets']['scripts'] );
+        $this->assertStringEndsWith( 'assets/js/cheatjs-admin.js', $GLOBALS['cheatjs_test_assets']['scripts']['cheatjs-admin']['src'] );
+        $this->assertSame( [], $GLOBALS['cheatjs_test_assets']['scripts']['cheatjs-admin']['deps'] );
+        $this->assertTrue( $GLOBALS['cheatjs_test_assets']['scripts']['cheatjs-admin']['args'] );
     }
 
     public function test_plugin_hooks_registers_admin_callbacks_when_admin_exists(): void {
