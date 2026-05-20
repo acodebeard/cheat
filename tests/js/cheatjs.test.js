@@ -45,6 +45,7 @@ describe('CheatJS frontend detector', () => {
     delete window.CheatJS;
     delete window.CHEATJS_CONFIG;
     delete window.CHEATJS_AUTO_CONTROLLER;
+    delete window.CHEATJS_AUTO_PENDING;
     Object.defineProperty(document, 'readyState', {
       configurable: true,
       value: 'complete',
@@ -260,6 +261,32 @@ describe('CheatJS frontend detector', () => {
     press('a');
 
     expect(document.body.classList.contains('cheatjs-single-auto-bind')).toBe(true);
+  });
+
+  it('registers one pending DOMContentLoaded listener when evaluated repeatedly while loading', () => {
+    Object.defineProperty(document, 'readyState', {
+      configurable: true,
+      value: 'loading',
+    });
+    window.CHEATJS_CONFIG = {
+      maxGapMs: 2000,
+      presets: [preset({ bodyClass: 'cheatjs-single-pending-bind', sequence: ['a'] })],
+    };
+    const addEventListenerSpy = vi.spyOn(document, 'addEventListener');
+
+    loadCheatJS();
+    loadCheatJS();
+
+    const domReadyListeners = addEventListenerSpy.mock.calls.filter((call) => call[0] === 'DOMContentLoaded');
+    expect(domReadyListeners).toHaveLength(1);
+
+    press('a');
+    expect(document.body.classList.contains('cheatjs-single-pending-bind')).toBe(false);
+
+    document.dispatchEvent(new Event('DOMContentLoaded'));
+    press('a');
+
+    expect(document.body.classList.contains('cheatjs-single-pending-bind')).toBe(true);
   });
 
   it('defines composable aggregate CSS for filter and transform effects', () => {

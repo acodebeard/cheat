@@ -5,6 +5,7 @@
   var DEFAULT_MAX_GAP_MS = 2000;
   var NOTICE_TIMEOUT_MS = 2400;
   var AUTO_CONTROLLER_KEY = 'CHEATJS_AUTO_CONTROLLER';
+  var AUTO_PENDING_KEY = 'CHEATJS_AUTO_PENDING';
 
   function normalizeKey(key) {
     if (typeof key !== 'string') {
@@ -161,6 +162,8 @@
   }
 
   function initWhenReady() {
+    window[AUTO_PENDING_KEY] = false;
+
     if (!window.CHEATJS_CONFIG || window[AUTO_CONTROLLER_KEY]) {
       return;
     }
@@ -177,7 +180,10 @@
 
   if (window.document) {
     if (window.document.readyState === 'loading') {
-      window.document.addEventListener('DOMContentLoaded', initWhenReady, { once: true });
+      if (!window[AUTO_CONTROLLER_KEY] && !window[AUTO_PENDING_KEY]) {
+        window[AUTO_PENDING_KEY] = true;
+        window.document.addEventListener('DOMContentLoaded', initWhenReady, { once: true });
+      }
     } else {
       initWhenReady();
     }
