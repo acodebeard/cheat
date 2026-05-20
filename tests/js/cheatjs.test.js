@@ -4,6 +4,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const scriptPath = path.resolve(process.cwd(), 'assets/js/cheatjs.js');
 const effectsPath = path.resolve(process.cwd(), 'assets/css/cheatjs-effects.css');
+const stopMessages = [
+  'good. cheating is wrong.',
+  "it's stopped, but i'm telling on you.",
+  'fine. your secret is safe-ish.',
+  'cheating canceled. character restored.',
+  'the evidence has been hidden poorly.',
+];
 
 function loadCheatJS() {
   if (fs.existsSync(scriptPath)) {
@@ -179,6 +186,115 @@ describe('CheatJS frontend detector', () => {
     expect(document.body.classList.contains('cheatjs-konami')).toBe(false);
   });
 
+  it('does not render the stop button before a cheat activates', () => {
+    loadCheatJS();
+    const controller = window.CheatJS.init({
+      maxGapMs: 2000,
+      presets: [preset({ sequence: ['a'] })],
+    }, document);
+
+    expect(document.querySelector('.cheatjs-stop-button')).toBeNull();
+    controller.destroy();
+  });
+
+  it('renders one stop button labeled stop cheating after a cheat activates', () => {
+    loadCheatJS();
+    const controller = window.CheatJS.init({
+      maxGapMs: 2000,
+      presets: [preset({ sequence: ['a'] })],
+    }, document);
+
+    press('a');
+
+    const buttons = document.querySelectorAll('.cheatjs-stop-button');
+    expect(buttons).toHaveLength(1);
+    expect(buttons[0].tagName).toBe('BUTTON');
+    expect(buttons[0].type).toBe('button');
+    expect(buttons[0].textContent).toBe('Stop cheating');
+    controller.destroy();
+  });
+
+  it('clicking the stop button removes active cheats and removes the button', () => {
+    loadCheatJS();
+    const controller = window.CheatJS.init({
+      maxGapMs: 2000,
+      presets: [preset({ sequence: ['a'] })],
+    }, document);
+
+    press('a');
+    document.querySelector('.cheatjs-stop-button').click();
+
+    expect(document.body.classList.contains('cheatjs-konami')).toBe(false);
+    expect(document.querySelector('.cheatjs-stop-button')).toBeNull();
+    controller.destroy();
+  });
+
+  it('clicking the stop button clears multiple active cheats', () => {
+    loadCheatJS();
+    const controller = window.CheatJS.init({
+      maxGapMs: 2000,
+      presets: [
+        preset({ bodyClass: 'cheatjs-one', sequence: ['a'] }),
+        preset({ id: 'two', bodyClass: 'cheatjs-two', sequence: ['b'] }),
+      ],
+    }, document);
+
+    press('a');
+    press('b');
+    document.querySelector('.cheatjs-stop-button').click();
+
+    expect(document.body.classList.contains('cheatjs-one')).toBe(false);
+    expect(document.body.classList.contains('cheatjs-two')).toBe(false);
+    expect(document.querySelector('.cheatjs-stop-button')).toBeNull();
+    controller.destroy();
+  });
+
+  it('clicking the stop button shows a joke stop notice from the message pool', () => {
+    loadCheatJS();
+    const controller = window.CheatJS.init({
+      maxGapMs: 2000,
+      presets: [preset({ sequence: ['a'] })],
+    }, document);
+
+    press('a');
+    document.querySelector('.cheatjs-stop-button').click();
+
+    const notices = document.querySelectorAll('.cheatjs-notice');
+    expect(stopMessages).toContain(notices[notices.length - 1].textContent);
+    controller.destroy();
+  });
+
+  it('hides the stop button when the last active cheat is toggled off by sequence', () => {
+    loadCheatJS();
+    const controller = window.CheatJS.init({
+      maxGapMs: 2000,
+      presets: [preset({ sequence: ['a'] })],
+    }, document);
+
+    press('a');
+    expect(document.querySelector('.cheatjs-stop-button')).not.toBeNull();
+
+    press('a');
+
+    expect(document.body.classList.contains('cheatjs-konami')).toBe(false);
+    expect(document.querySelector('.cheatjs-stop-button')).toBeNull();
+    controller.destroy();
+  });
+
+  it('destroy removes active cheat classes and the stop button', () => {
+    loadCheatJS();
+    const controller = window.CheatJS.init({
+      maxGapMs: 2000,
+      presets: [preset({ sequence: ['a'] })],
+    }, document);
+
+    press('a');
+    controller.destroy();
+
+    expect(document.body.classList.contains('cheatjs-konami')).toBe(false);
+    expect(document.querySelector('.cheatjs-stop-button')).toBeNull();
+  });
+
   it('renders notices with textContent instead of HTML', () => {
     loadCheatJS();
     const controller = window.CheatJS.init({
@@ -293,8 +409,10 @@ describe('CheatJS frontend detector', () => {
     const css = loadEffects();
 
     expect(css).not.toMatch(/body\[class\*="cheatjs-"\]\s*>\s*:not\(\.cheatjs-notice\)/);
-    expect(css).toMatch(/body\.cheatjs-disco\s*>\s*:not\(\.cheatjs-notice\),[\s\S]*body\.cheatjs-drunk\s*>\s*:not\(\.cheatjs-notice\),[\s\S]*body\.cheatjs-grayscale\s*>\s*:not\(\.cheatjs-notice\),[\s\S]*body\.cheatjs-high-contrast\s*>\s*:not\(\.cheatjs-notice\),[\s\S]*body\.cheatjs-soft-blur\s*>\s*:not\(\.cheatjs-notice\)\s*\{[\s\S]*filter:/);
-    expect(css).toMatch(/body\.cheatjs-confidence\s*>\s*:not\(\.cheatjs-notice\),[\s\S]*body\.cheatjs-upside-down\s*>\s*:not\(\.cheatjs-notice\),[\s\S]*body\.cheatjs-drunk\s*>\s*:not\(\.cheatjs-notice\)\s*\{[\s\S]*transform:/);
+    expect(css).not.toMatch(/body\[class\*="cheatjs-"\]\s*>\s*:not\(\.cheatjs-stop-button\)/);
+    expect(css).toContain(':not(.cheatjs-notice):not(.cheatjs-stop-button)');
+    expect(css).toMatch(/body\.cheatjs-disco\s*>\s*:not\(\.cheatjs-notice\):not\(\.cheatjs-stop-button\),[\s\S]*body\.cheatjs-drunk\s*>\s*:not\(\.cheatjs-notice\):not\(\.cheatjs-stop-button\),[\s\S]*body\.cheatjs-grayscale\s*>\s*:not\(\.cheatjs-notice\):not\(\.cheatjs-stop-button\),[\s\S]*body\.cheatjs-high-contrast\s*>\s*:not\(\.cheatjs-notice\):not\(\.cheatjs-stop-button\),[\s\S]*body\.cheatjs-soft-blur\s*>\s*:not\(\.cheatjs-notice\):not\(\.cheatjs-stop-button\)\s*\{[\s\S]*filter:/);
+    expect(css).toMatch(/body\.cheatjs-confidence\s*>\s*:not\(\.cheatjs-notice\):not\(\.cheatjs-stop-button\),[\s\S]*body\.cheatjs-upside-down\s*>\s*:not\(\.cheatjs-notice\):not\(\.cheatjs-stop-button\),[\s\S]*body\.cheatjs-drunk\s*>\s*:not\(\.cheatjs-notice\):not\(\.cheatjs-stop-button\)\s*\{[\s\S]*transform:/);
     expect(css).toMatch(/filter:\s*var\(--cheatjs-grayscale\)\s*var\(--cheatjs-contrast\)\s*var\(--cheatjs-brightness\)\s*var\(--cheatjs-saturate\)\s*var\(--cheatjs-soft-blur\)\s*var\(--cheatjs-drunk-blur\)\s*var\(--cheatjs-hue\)/);
     expect(css).toMatch(/transform:\s*rotate\(var\(--cheatjs-rotate-base\)\)\s*rotate\(var\(--cheatjs-rotate-wobble\)\)\s*translateX\(var\(--cheatjs-translate-x\)\)\s*scale\(var\(--cheatjs-scale\)\)/);
     expect(css).not.toMatch(/body\.cheatjs-soft-blur\s*\{[^}]*filter:/);
@@ -324,5 +442,14 @@ describe('CheatJS frontend detector', () => {
     expect(css).not.toMatch(/@keyframes cheatjs-drunk[\s\S]*--cheatjs-rotate:/);
     expect(css).toMatch(/@keyframes cheatjs-disco[\s\S]*--cheatjs-saturate:\s*saturate\(1\.[0-9]+\)/);
     expect(css).toMatch(/body\.cheatjs-high-contrast\s*\{[\s\S]*--cheatjs-contrast:\s*contrast\(1\.5\)[\s\S]*--cheatjs-brightness:\s*brightness\(1\.[0-9]+\)/);
+  });
+
+  it('styles the stop cheating button as a fixed side control', () => {
+    const css = loadEffects();
+
+    expect(css).toMatch(/\.cheatjs-stop-button\s*\{[\s\S]*position:\s*fixed/);
+    expect(css).toMatch(/\.cheatjs-stop-button\s*\{[\s\S]*right:\s*0/);
+    expect(css).toMatch(/\.cheatjs-stop-button\s*\{[\s\S]*top:\s*50%/);
+    expect(css).toMatch(/\.cheatjs-stop-button\s*\{[\s\S]*z-index:\s*1000000/);
   });
 });

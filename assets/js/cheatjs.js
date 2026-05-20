@@ -4,6 +4,15 @@
   var ARROW_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
   var DEFAULT_MAX_GAP_MS = 2000;
   var NOTICE_TIMEOUT_MS = 2400;
+  var STOP_BUTTON_CLASS = 'cheatjs-stop-button';
+  var STOP_BUTTON_TEXT = 'Stop cheating';
+  var STOP_MESSAGES = [
+    'good. cheating is wrong.',
+    "it's stopped, but i'm telling on you.",
+    'fine. your secret is safe-ish.',
+    'cheating canceled. character restored.',
+    'the evidence has been hidden poorly.',
+  ];
   var AUTO_CONTROLLER_KEY = 'CHEATJS_AUTO_CONTROLLER';
   var AUTO_PENDING_KEY = 'CHEATJS_AUTO_PENDING';
 
@@ -90,6 +99,71 @@
     }).filter(function (state) {
       return state.preset && state.preset.bodyClass && state.sequence.length > 0;
     });
+    var activeBodyClasses = [];
+    var stopButton = null;
+
+    function hasActiveBodyClass(bodyClass) {
+      return activeBodyClasses.indexOf(bodyClass) !== -1;
+    }
+
+    function addActiveBodyClass(bodyClass) {
+      if (!hasActiveBodyClass(bodyClass)) {
+        activeBodyClasses.push(bodyClass);
+      }
+    }
+
+    function removeActiveBodyClass(bodyClass) {
+      activeBodyClasses = activeBodyClasses.filter(function (activeBodyClass) {
+        return activeBodyClass !== bodyClass;
+      });
+    }
+
+    function getStopMessage() {
+      return STOP_MESSAGES[Math.floor(Math.random() * STOP_MESSAGES.length)];
+    }
+
+    function removeStopButton() {
+      if (stopButton && stopButton.parentNode) {
+        stopButton.parentNode.removeChild(stopButton);
+      }
+
+      stopButton = null;
+    }
+
+    function clearActiveCheats() {
+      activeBodyClasses.forEach(function (bodyClass) {
+        doc.body.classList.remove(bodyClass);
+      });
+      activeBodyClasses = [];
+      removeStopButton();
+    }
+
+    function stopCheating() {
+      clearActiveCheats();
+      showNotice(doc, getStopMessage());
+    }
+
+    function renderStopButton() {
+      if (!doc.body) {
+        return;
+      }
+
+      if (activeBodyClasses.length === 0) {
+        removeStopButton();
+        return;
+      }
+
+      if (stopButton && stopButton.parentNode) {
+        return;
+      }
+
+      stopButton = doc.createElement('button');
+      stopButton.type = 'button';
+      stopButton.className = STOP_BUTTON_CLASS;
+      stopButton.textContent = STOP_BUTTON_TEXT;
+      stopButton.addEventListener('click', stopCheating);
+      doc.body.appendChild(stopButton);
+    }
 
     function resetIfStale(state, now) {
       if (state.progress > 0 && now - state.lastAt > maxGapMs) {
@@ -117,6 +191,14 @@
 
     function togglePreset(preset) {
       var enabled = doc.body.classList.toggle(preset.bodyClass);
+
+      if (enabled) {
+        addActiveBodyClass(preset.bodyClass);
+      } else {
+        removeActiveBodyClass(preset.bodyClass);
+      }
+
+      renderStopButton();
       showNotice(doc, enabled ? preset.onMessage : preset.offMessage);
     }
 
@@ -143,6 +225,7 @@
           state.progress = 0;
           state.lastAt = 0;
         });
+        clearActiveCheats();
       },
     };
   }
