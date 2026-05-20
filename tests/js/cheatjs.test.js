@@ -293,11 +293,12 @@ describe('CheatJS frontend detector', () => {
     const css = loadEffects();
 
     expect(css).not.toMatch(/body\[class\*="cheatjs-"\]\s*>\s*:not\(\.cheatjs-notice\)/);
-    expect(css).toMatch(/body\.cheatjs-disco\s*>\s*:not\(\.cheatjs-notice\),[\s\S]*body\.cheatjs-grayscale\s*>\s*:not\(\.cheatjs-notice\),[\s\S]*body\.cheatjs-high-contrast\s*>\s*:not\(\.cheatjs-notice\),[\s\S]*body\.cheatjs-soft-blur\s*>\s*:not\(\.cheatjs-notice\)\s*\{[\s\S]*filter:/);
+    expect(css).toMatch(/body\.cheatjs-disco\s*>\s*:not\(\.cheatjs-notice\),[\s\S]*body\.cheatjs-drunk\s*>\s*:not\(\.cheatjs-notice\),[\s\S]*body\.cheatjs-grayscale\s*>\s*:not\(\.cheatjs-notice\),[\s\S]*body\.cheatjs-high-contrast\s*>\s*:not\(\.cheatjs-notice\),[\s\S]*body\.cheatjs-soft-blur\s*>\s*:not\(\.cheatjs-notice\)\s*\{[\s\S]*filter:/);
     expect(css).toMatch(/body\.cheatjs-confidence\s*>\s*:not\(\.cheatjs-notice\),[\s\S]*body\.cheatjs-upside-down\s*>\s*:not\(\.cheatjs-notice\),[\s\S]*body\.cheatjs-drunk\s*>\s*:not\(\.cheatjs-notice\)\s*\{[\s\S]*transform:/);
-    expect(css).toMatch(/filter:\s*var\(--cheatjs-grayscale\)\s*var\(--cheatjs-contrast\)\s*var\(--cheatjs-blur\)\s*var\(--cheatjs-hue\)/);
+    expect(css).toMatch(/filter:\s*var\(--cheatjs-grayscale\)\s*var\(--cheatjs-contrast\)\s*var\(--cheatjs-brightness\)\s*var\(--cheatjs-saturate\)\s*var\(--cheatjs-soft-blur\)\s*var\(--cheatjs-drunk-blur\)\s*var\(--cheatjs-hue\)/);
     expect(css).toMatch(/transform:\s*rotate\(var\(--cheatjs-rotate\)\)\s*translateX\(var\(--cheatjs-translate-x\)\)\s*scale\(var\(--cheatjs-scale\)\)/);
     expect(css).not.toMatch(/body\.cheatjs-soft-blur\s*\{[^}]*filter:/);
+    expect(css).not.toMatch(/body\.cheatjs-drunk\s*\{[^}]*filter:/);
     expect(css).not.toMatch(/body\.cheatjs-grayscale\s*\{[^}]*filter:/);
     expect(css).not.toMatch(/body\.cheatjs-high-contrast\s*\{[^}]*filter:/);
     expect(css).not.toMatch(/body\.cheatjs-upside-down\s*\{[^}]*transform:/);
@@ -309,5 +310,16 @@ describe('CheatJS frontend detector', () => {
     expect(css).toMatch(/@keyframes cheatjs-disco[\s\S]*--cheatjs-hue:\s*hue-rotate\(120deg\)/);
     expect(css).toMatch(/@keyframes cheatjs-disco[\s\S]*--cheatjs-hue:\s*hue-rotate\(240deg\)/);
     expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\)[\s\S]*body\.cheatjs-disco[\s\S]*animation:\s*none/);
+  });
+
+  it('defines required visual details for named CSS effects', () => {
+    const css = loadEffects();
+
+    expect(css).toMatch(/body\.cheatjs-geocities\s*\{[\s\S]*font-family:\s*"Comic Sans MS"/);
+    expect(css).toMatch(/body\.cheatjs-konami::before\s*\{[\s\S]*repeating-linear-gradient[\s\S]*rgba\(0,\s*255,\s*65/);
+    expect(css).toMatch(/body\.cheatjs-konami::after\s*\{[\s\S]*content:\s*"KONAMI MODE"/);
+    expect(css).toMatch(/body\.cheatjs-drunk\s*\{[\s\S]*--cheatjs-drunk-blur:\s*blur\(/);
+    expect(css).toMatch(/@keyframes cheatjs-disco[\s\S]*--cheatjs-saturate:\s*saturate\(1\.[0-9]+\)/);
+    expect(css).toMatch(/body\.cheatjs-high-contrast\s*\{[\s\S]*--cheatjs-contrast:\s*contrast\(1\.5\)[\s\S]*--cheatjs-brightness:\s*brightness\(1\.[0-9]+\)/);
   });
 });
