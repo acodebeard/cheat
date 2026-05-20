@@ -4,7 +4,8 @@ body {
   --cheatjs-drunk-blur: blur(0);
   --cheatjs-grayscale: grayscale(0);
   --cheatjs-hue: hue-rotate(0deg);
-  --cheatjs-rotate: 0deg;
+  --cheatjs-rotate-base: 0deg;
+  --cheatjs-rotate-wobble: 0deg;
   --cheatjs-saturate: saturate(1);
   --cheatjs-translate-x: 0;
   --cheatjs-soft-blur: blur(0);
@@ -22,7 +23,7 @@ body.cheatjs-soft-blur > :not(.cheatjs-notice) {
 body.cheatjs-confidence > :not(.cheatjs-notice),
 body.cheatjs-upside-down > :not(.cheatjs-notice),
 body.cheatjs-drunk > :not(.cheatjs-notice) {
-  transform: rotate(var(--cheatjs-rotate)) translateX(var(--cheatjs-translate-x)) scale(var(--cheatjs-scale));
+  transform: rotate(var(--cheatjs-rotate-base)) rotate(var(--cheatjs-rotate-wobble)) translateX(var(--cheatjs-translate-x)) scale(var(--cheatjs-scale));
   transform-origin: 50% 2rem;
 }
 
@@ -114,7 +115,7 @@ body.cheatjs-disco {
 }
 
 body.cheatjs-upside-down {
-  --cheatjs-rotate: 180deg;
+  --cheatjs-rotate-base: 180deg;
 }
 
 body.cheatjs-grayscale {
@@ -139,12 +140,12 @@ body.cheatjs-soft-blur {
 @keyframes cheatjs-drunk {
   0%,
   100% {
-    --cheatjs-rotate: -1deg;
+    --cheatjs-rotate-wobble: -1deg;
     --cheatjs-translate-x: -0.25rem;
   }
 
   50% {
-    --cheatjs-rotate: 1deg;
+    --cheatjs-rotate-wobble: 1deg;
     --cheatjs-translate-x: 0.25rem;
   }
 }
