@@ -11,6 +11,10 @@ $GLOBALS['cheatjs_test_assets'] = [
 ];
 $GLOBALS['cheatjs_test_registered_settings'] = [];
 $GLOBALS['cheatjs_test_options_pages'] = [];
+$GLOBALS['cheatjs_test_current_user_can'] = [
+    'manage_options' => true,
+];
+$GLOBALS['cheatjs_test_wp_die'] = [];
 
 function add_filter( $hook, $callback, $priority = 10, $accepted_args = 1 ) {
     $GLOBALS['cheatjs_test_filters'][ $hook ][ $priority ][] = [
@@ -117,7 +121,17 @@ function admin_url( $path = '' ) {
 }
 
 function current_user_can( $capability ) {
-    return $capability === 'manage_options';
+    if ( array_key_exists( $capability, $GLOBALS['cheatjs_test_current_user_can'] ) ) {
+        return (bool) $GLOBALS['cheatjs_test_current_user_can'][ $capability ];
+    }
+
+    return false;
+}
+
+function wp_die( $message = '', $title = '', $args = [] ) {
+    $GLOBALS['cheatjs_test_wp_die'][] = compact( 'message', 'title', 'args' );
+
+    throw new RuntimeException( (string) $message );
 }
 
 function add_options_page( $page_title = '', $menu_title = '', $capability = '', $menu_slug = '', $callback = null ) {

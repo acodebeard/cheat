@@ -61,6 +61,14 @@ final class CheatJS_Admin {
     }
 
     public function render_page(): void {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            if ( function_exists( 'wp_die' ) ) {
+                wp_die( esc_html( 'Sorry, you are not allowed to access this page.' ) );
+            }
+
+            return;
+        }
+
         $settings = $this->settings->get();
         ?>
         <div class="wrap cheatjs-admin">

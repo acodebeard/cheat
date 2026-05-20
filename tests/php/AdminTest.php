@@ -20,6 +20,10 @@ final class AdminTest extends TestCase {
         $GLOBALS['cheatjs_test_actions']             = [];
         $GLOBALS['cheatjs_test_registered_settings'] = [];
         $GLOBALS['cheatjs_test_options_pages']       = [];
+        $GLOBALS['cheatjs_test_current_user_can']    = [
+            'manage_options' => true,
+        ];
+        $GLOBALS['cheatjs_test_wp_die']              = [];
         $GLOBALS['cheatjs_test_assets']              = [
             'scripts' => [],
             'styles'  => [],
@@ -85,6 +89,25 @@ final class AdminTest extends TestCase {
         $html = ob_get_clean();
 
         $this->assertStringContainsString( 'type="hidden" name="cheatjs_settings[max_gap_ms]" value="3500"', $html );
+    }
+
+    public function test_render_page_dies_without_manage_options_capability(): void {
+        $GLOBALS['cheatjs_test_current_user_can']['manage_options'] = false;
+
+        ob_start();
+        try {
+            $this->create_admin()->render_page();
+            $died = false;
+        } catch ( RuntimeException $exception ) {
+            $died = true;
+        } finally {
+            $html = ob_get_clean();
+        }
+
+        $this->assertTrue( $died );
+        $this->assertCount( 1, $GLOBALS['cheatjs_test_wp_die'] );
+        $this->assertStringContainsString( 'not allowed', $GLOBALS['cheatjs_test_wp_die'][0]['message'] );
+        $this->assertStringNotContainsString( '<form method="post" action="options.php">', $html );
     }
 
     public function test_register_settings_registers_option_with_settings_sanitizer(): void {
