@@ -29,7 +29,7 @@ The key recorder supports recording keys directly in the browser. Use **Backspac
 
 ## Built-in Presets
 
-CheatJS v1 ships with these presets:
+The initial WordPress plugin ships with these presets:
 
 - `confidence`: adds an encouraging boost.
 - `geocities`: applies a retro web effect.
@@ -49,7 +49,7 @@ Developers can register or modify presets with the `cheatjs_presets` filter:
 add_filter( 'cheatjs_presets', function ( array $presets ): array {
     $presets['matrix'] = [
         'name'             => 'Matrix',
-        'description'      => 'Adds a custom Matrix-style effect.',
+        'description'      => 'Toggles a custom Matrix body class.',
         'effect_label'     => 'Matrix mode',
         'body_class'       => 'cheatjs-matrix',
         'default_enabled'  => false,
@@ -64,9 +64,11 @@ add_filter( 'cheatjs_presets', function ( array $presets ): array {
 
 Filtered presets must include all required fields and pass CheatJS validation before they are saved or sent to the browser.
 
+Custom developer presets should provide their own CSS for the configured `body_class` when they need a visual effect.
+
 ## Safety Note
 
-CheatJS v1 does not allow custom JavaScript or CSS in the admin. Effects are built into the plugin so administrators can configure easter eggs without adding executable code or arbitrary styles.
+CheatJS does not allow custom JavaScript or CSS in the admin. Effects are built into the plugin so administrators can configure easter eggs without adding executable code or arbitrary styles.
 
 ## Development
 
