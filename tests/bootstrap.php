@@ -61,6 +61,10 @@ function update_option( $name, $value ) {
     return true;
 }
 
+function absint( $value ) {
+    return abs( (int) $value );
+}
+
 function sanitize_key( $key ) {
     return preg_replace( '/[^a-z0-9_\-]/', '', strtolower( (string) $key ) );
 }

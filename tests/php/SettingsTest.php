@@ -120,6 +120,28 @@ final class SettingsTest extends TestCase {
         $this->assertFalse( $sanitized['presets']['geocities']['enabled'] );
     }
 
+    public function test_sanitize_accepts_valid_positive_max_gap_ms(): void {
+        $settings = new CheatJS_Settings();
+
+        $sanitized = $settings->sanitize( [
+            'max_gap_ms' => '3500',
+        ] );
+
+        $this->assertSame( 3500, $sanitized['max_gap_ms'] );
+    }
+
+    public function test_sanitize_rejects_invalid_max_gap_ms_values(): void {
+        $settings = new CheatJS_Settings();
+
+        foreach ( [ '0', '-100', 'not-a-number' ] as $value ) {
+            $sanitized = $settings->sanitize( [
+                'max_gap_ms' => $value,
+            ] );
+
+            $this->assertSame( CheatJS_Settings::DEFAULT_MAX_GAP_MS, $sanitized['max_gap_ms'] );
+        }
+    }
+
     public function test_invalid_keys_are_removed_when_at_least_one_valid_key_remains(): void {
         $settings  = new CheatJS_Settings();
         $sanitized = $settings->sanitize( [
@@ -260,5 +282,24 @@ final class SettingsTest extends TestCase {
         $settings->activate_defaults();
 
         $this->assertSame( $settings->get_defaults(), get_option( CheatJS_Settings::OPTION_NAME ) );
+    }
+
+    public function test_activate_defaults_does_not_overwrite_existing_option(): void {
+        $existing = [
+            'global_enabled' => false,
+            'max_gap_ms'     => 3500,
+            'presets'        => [
+                'konami' => [
+                    'enabled'  => false,
+                    'sequence' => [ 'k' ],
+                ],
+            ],
+        ];
+        update_option( CheatJS_Settings::OPTION_NAME, $existing );
+
+        $settings = new CheatJS_Settings();
+        $settings->activate_defaults();
+
+        $this->assertSame( $existing, get_option( CheatJS_Settings::OPTION_NAME ) );
     }
 }

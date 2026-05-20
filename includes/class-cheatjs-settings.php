@@ -75,6 +75,10 @@ final class CheatJS_Settings {
     }
 
     public function activate_defaults(): void {
+        if ( get_option( self::OPTION_NAME, null ) !== null ) {
+            return;
+        }
+
         update_option( self::OPTION_NAME, $this->get_defaults() );
     }
 
@@ -88,7 +92,7 @@ final class CheatJS_Settings {
             : $defaults['global_enabled'];
 
         if ( array_key_exists( 'max_gap_ms', $input ) ) {
-            $max_gap_ms = absint( $input['max_gap_ms'] );
+            $max_gap_ms = is_numeric( $input['max_gap_ms'] ) ? (int) $input['max_gap_ms'] : 0;
             if ( $max_gap_ms > 0 ) {
                 $settings['max_gap_ms'] = $max_gap_ms;
             }
