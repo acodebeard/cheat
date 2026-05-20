@@ -149,6 +149,22 @@ describe('CheatJS admin recorder', () => {
     expect(first.classList.contains('is-recording')).toBe(false);
   });
 
+  it('clicking Record again while recording preserves the original Escape checkpoint', () => {
+    loadCheatJSAdmin();
+    controller = window.CheatJSAdmin.init(document);
+    const [first] = cards();
+
+    click(first, '.cheatjs-record');
+    press('b');
+    click(first, '.cheatjs-record');
+    press('c');
+    press('Escape');
+
+    expect(input(first).value).toBe('a');
+    expect(chips(first)).toEqual(['A']);
+    expect(first.classList.contains('is-recording')).toBe(false);
+  });
+
   it('Done stops recording and preserves the current sequence', () => {
     loadCheatJSAdmin();
     controller = window.CheatJSAdmin.init(document);

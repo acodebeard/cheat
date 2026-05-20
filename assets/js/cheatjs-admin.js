@@ -114,6 +114,10 @@
     }
 
     function startRecording(card) {
+      if (activeCard === card) {
+        return;
+      }
+
       if (activeCard && activeCard !== card) {
         stopRecording();
       }
