@@ -133,7 +133,7 @@ final class SettingsTest extends TestCase {
     public function test_sanitize_rejects_invalid_max_gap_ms_values(): void {
         $settings = new CheatJS_Settings();
 
-        foreach ( [ '0', '-100', 'not-a-number' ] as $value ) {
+        foreach ( [ '0', '-100', 'not-a-number', '1.5', 1.5 ] as $value ) {
             $sanitized = $settings->sanitize( [
                 'max_gap_ms' => $value,
             ] );

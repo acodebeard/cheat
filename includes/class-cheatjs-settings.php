@@ -92,7 +92,7 @@ final class CheatJS_Settings {
             : $defaults['global_enabled'];
 
         if ( array_key_exists( 'max_gap_ms', $input ) ) {
-            $max_gap_ms = is_numeric( $input['max_gap_ms'] ) ? (int) $input['max_gap_ms'] : 0;
+            $max_gap_ms = $this->sanitize_positive_integer( $input['max_gap_ms'] );
             if ( $max_gap_ms > 0 ) {
                 $settings['max_gap_ms'] = $max_gap_ms;
             }
@@ -145,5 +145,17 @@ final class CheatJS_Settings {
         }
 
         return false;
+    }
+
+    private function sanitize_positive_integer( $value ): int {
+        if ( is_int( $value ) ) {
+            return $value > 0 ? $value : 0;
+        }
+
+        if ( is_string( $value ) && preg_match( '/^[1-9][0-9]*$/', $value ) ) {
+            return (int) $value;
+        }
+
+        return 0;
     }
 }
