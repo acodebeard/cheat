@@ -292,7 +292,9 @@ describe('CheatJS frontend detector', () => {
   it('defines composable aggregate CSS for filter and transform effects', () => {
     const css = loadEffects();
 
-    expect(css).toMatch(/body\[class\*="cheatjs-"\]\s*>\s*:not\(\.cheatjs-notice\)/);
+    expect(css).not.toMatch(/body\[class\*="cheatjs-"\]\s*>\s*:not\(\.cheatjs-notice\)/);
+    expect(css).toMatch(/body\.cheatjs-disco\s*>\s*:not\(\.cheatjs-notice\),[\s\S]*body\.cheatjs-grayscale\s*>\s*:not\(\.cheatjs-notice\),[\s\S]*body\.cheatjs-high-contrast\s*>\s*:not\(\.cheatjs-notice\),[\s\S]*body\.cheatjs-soft-blur\s*>\s*:not\(\.cheatjs-notice\)\s*\{[\s\S]*filter:/);
+    expect(css).toMatch(/body\.cheatjs-confidence\s*>\s*:not\(\.cheatjs-notice\),[\s\S]*body\.cheatjs-upside-down\s*>\s*:not\(\.cheatjs-notice\),[\s\S]*body\.cheatjs-drunk\s*>\s*:not\(\.cheatjs-notice\)\s*\{[\s\S]*transform:/);
     expect(css).toMatch(/filter:\s*var\(--cheatjs-grayscale\)\s*var\(--cheatjs-contrast\)\s*var\(--cheatjs-blur\)\s*var\(--cheatjs-hue\)/);
     expect(css).toMatch(/transform:\s*rotate\(var\(--cheatjs-rotate\)\)\s*translateX\(var\(--cheatjs-translate-x\)\)\s*scale\(var\(--cheatjs-scale\)\)/);
     expect(css).not.toMatch(/body\.cheatjs-soft-blur\s*\{[^}]*filter:/);

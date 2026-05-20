@@ -8,8 +8,16 @@ body {
   --cheatjs-scale: 1;
 }
 
-body[class*="cheatjs-"] > :not(.cheatjs-notice) {
+body.cheatjs-disco > :not(.cheatjs-notice),
+body.cheatjs-grayscale > :not(.cheatjs-notice),
+body.cheatjs-high-contrast > :not(.cheatjs-notice),
+body.cheatjs-soft-blur > :not(.cheatjs-notice) {
   filter: var(--cheatjs-grayscale) var(--cheatjs-contrast) var(--cheatjs-blur) var(--cheatjs-hue);
+}
+
+body.cheatjs-confidence > :not(.cheatjs-notice),
+body.cheatjs-upside-down > :not(.cheatjs-notice),
+body.cheatjs-drunk > :not(.cheatjs-notice) {
   transform: rotate(var(--cheatjs-rotate)) translateX(var(--cheatjs-translate-x)) scale(var(--cheatjs-scale));
   transform-origin: 50% 2rem;
 }
