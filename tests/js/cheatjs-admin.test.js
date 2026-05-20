@@ -3,6 +3,7 @@ import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 const scriptPath = path.resolve(process.cwd(), 'assets/js/cheatjs-admin.js');
+const cssPath = path.resolve(process.cwd(), 'assets/css/cheatjs-admin.css');
 
 function loadCheatJSAdmin() {
   if (fs.existsSync(scriptPath)) {
@@ -248,5 +249,12 @@ describe('CheatJS admin recorder', () => {
     expect(input(first).value).toBe('a,b');
     window.CHEATJS_ADMIN_AUTO_CONTROLLER.destroy();
     window.CHEATJS_ADMIN_AUTO_CONTROLLER = null;
+  });
+
+  it('shows the Done button only while a preset is recording', () => {
+    const css = fs.readFileSync(cssPath, 'utf8');
+
+    expect(css).toMatch(/\.cheatjs-done\s*{[^}]*display:\s*none;/s);
+    expect(css).toMatch(/\.cheatjs-preset\.is-recording\s+\.cheatjs-done\s*{[^}]*display:\s*inline-block;/s);
   });
 });

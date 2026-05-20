@@ -132,6 +132,7 @@ final class CheatJS_Admin {
             <div class="cheatjs-preset-header">
                 <div>
                     <h3><?php echo esc_html( $preset['name'] ); ?></h3>
+                    <p class="cheatjs-effect-label"><?php echo esc_html( $preset['effect_label'] ); ?></p>
                     <p><?php echo esc_html( $preset['description'] ); ?></p>
                 </div>
                 <label class="cheatjs-toggle">

@@ -52,6 +52,7 @@ final class AdminTest extends TestCase {
         $this->assertStringContainsString( 'class="cheatjs-preset', $html );
         $this->assertStringContainsString( 'data-cheatjs-preset="konami"', $html );
         $this->assertStringContainsString( 'data-default-sequence="ArrowUp,ArrowUp,ArrowDown,ArrowDown,ArrowLeft,ArrowRight,ArrowLeft,ArrowRight,b,a"', $html );
+        $this->assertStringContainsString( '<p class="cheatjs-effect-label">Konami mode</p>', $html );
 
         $global_hidden_position   = strpos( $html, 'name="cheatjs_settings[global_enabled]" value="0"' );
         $global_checkbox_position = strpos( $html, 'type="checkbox" name="cheatjs_settings[global_enabled]" value="1"' );
