@@ -86,9 +86,9 @@ final class FrontendTest extends TestCase {
                     'enabled'  => '1',
                     'sequence' => 'up a',
                 ],
-                'high_contrast' => [
+                'runaway' => [
                     'enabled'  => '1',
-                    'sequence' => 'high',
+                    'sequence' => 'run',
                 ],
             ],
         ] );
@@ -96,7 +96,7 @@ final class FrontendTest extends TestCase {
         $presets = $this->create_frontend()->get_runtime_config()['presets'];
 
         $this->assertSame( [ 0, 1 ], array_keys( $presets ) );
-        $this->assertSame( [ 'konami', 'high_contrast' ], array_column( $presets, 'id' ) );
+        $this->assertSame( [ 'konami', 'runaway' ], array_column( $presets, 'id' ) );
     }
 
     public function test_enqueue_assets_does_not_enqueue_anything_without_runtime_config(): void {

@@ -1,3 +1,75 @@
+
+@keyframes cheatjs-updown {
+  0% {
+    transform: scaleY(1);
+  }
+  100% {
+    transform: scaleY(-1);
+  }
+}
+@keyframes cheatjs-drunk {
+  0% {
+    filter:blur(0.1px);
+    transform: translateX(1px);
+
+  }
+  22% {
+    filter: blur(1px);
+    transform: translateX(-1px);
+
+  }
+  44% {
+    filter: blur(4px);
+    transform: translateX(2px);
+
+  }
+  77% {
+    filter: blur(1px);
+    transform: translateX(-2px);
+
+  }
+  100% {
+    filter: blur(0);
+    transform: translateX(1px);
+
+  }
+}
+
+@keyframes cheatjs-disco {
+  0% {
+    background-color: hsl(340 100% 32%);
+  }
+
+  33% {
+    background-color: hsl(100 100% 32%);
+  }
+
+  66% {
+    background-color: hsl(220 100% 32%);
+  }
+
+  100% {
+    background-color: hsl(340 100% 32%);
+  }
+}
+
+@keyframes cheatjs-fall-down-shake {
+  0% {
+    transform: translateX(-1px) rotate(-1deg);
+  }
+
+  100% {
+    transform: translateX(1px) rotate(1deg);
+  }
+}
+
+@keyframes cheatjs-fall-down-drop {
+  100% {
+    opacity: 0;
+    transform: translateX(var(--cheatjs-fall-x)) translateY(110vh) rotate(var(--cheatjs-fall-rotate));
+  }
+}
+
 body {
   --cheatjs-brightness: brightness(1);
   --cheatjs-contrast: contrast(1);
@@ -11,11 +83,8 @@ body {
   --cheatjs-soft-blur: blur(0);
   --cheatjs-scale: 1;
 }
-
-body.cheatjs-disco > :not(.cheatjs-notice):not(.cheatjs-stop-button),
 body.cheatjs-drunk > :not(.cheatjs-notice):not(.cheatjs-stop-button),
 body.cheatjs-grayscale > :not(.cheatjs-notice):not(.cheatjs-stop-button),
-body.cheatjs-high-contrast > :not(.cheatjs-notice):not(.cheatjs-stop-button),
 body.cheatjs-soft-blur > :not(.cheatjs-notice):not(.cheatjs-stop-button) {
   filter: var(--cheatjs-grayscale) var(--cheatjs-contrast) var(--cheatjs-brightness) var(--cheatjs-saturate) var(--cheatjs-soft-blur) var(--cheatjs-drunk-blur) var(--cheatjs-hue);
 }
@@ -136,73 +205,56 @@ body.cheatjs-konami::after {
 body.cheatjs-drunk {
   --cheatjs-drunk-blur: blur(0.7px);
   animation: cheatjs-drunk 3.5s ease-in-out infinite;
+  overflow-x: hidden;
 }
 
 body.cheatjs-disco {
-  animation: cheatjs-disco 1.2s linear infinite;
+  background-color: hsl(340 100% 32%);
+  animation: cheatjs-disco 1.2s steps(1, end) infinite;
 }
 
-body.cheatjs-upside-down {
-  --cheatjs-rotate-base: 180deg;
+body.cheatjs-fall-down {
+  overflow-x: hidden;
+}
+
+.cheatjs-fall-down-letter {
+  display: inline-block;
+  position: relative;
+  animation:
+    cheatjs-fall-down-shake var(--cheatjs-fall-shake-duration) steps(2, end) var(--cheatjs-fall-delay) 6,
+    cheatjs-fall-down-drop var(--cheatjs-fall-drop-duration) cubic-bezier(0.24, 0.82, 0.36, 1) calc(var(--cheatjs-fall-delay) + 0.72s + var(--cheatjs-fall-hold-delay)) forwards;
+  transform-origin: 50% 100%;
+  will-change: opacity, transform;
+}
+
+body.cheatjs-upside-down > :not(.cheatjs-notice):not(.cheatjs-stop-button){
+  animation: cheatjs-updown 1s linear 1.4s forwards;
 }
 
 body.cheatjs-grayscale {
   --cheatjs-grayscale: grayscale(1);
 }
 
-body.cheatjs-high-contrast {
-  --cheatjs-contrast: contrast(1.5);
-  --cheatjs-brightness: brightness(1.15);
-  background: #000;
-  color: #fff;
-}
-
-body.cheatjs-high-contrast a {
-  color: #ffff00;
+.cheatjs-runaway-target {
+  transition: transform 0.16s ease-out;
+  will-change: transform;
 }
 
 body.cheatjs-soft-blur {
   --cheatjs-soft-blur: blur(2px);
 }
 
-@keyframes cheatjs-drunk {
-  0%,
-  100% {
-    --cheatjs-rotate-wobble: -1deg;
-    --cheatjs-translate-x: -0.25rem;
-  }
-
-  50% {
-    --cheatjs-rotate-wobble: 1deg;
-    --cheatjs-translate-x: 0.25rem;
-  }
-}
-
-@keyframes cheatjs-disco {
-  0% {
-    --cheatjs-hue: hue-rotate(0deg);
-    --cheatjs-saturate: saturate(1.2);
-  }
-
-  33% {
-    --cheatjs-hue: hue-rotate(120deg);
-    --cheatjs-saturate: saturate(1.8);
-  }
-
-  66% {
-    --cheatjs-hue: hue-rotate(240deg);
-    --cheatjs-saturate: saturate(1.45);
-  }
-
-  100% {
-    --cheatjs-hue: hue-rotate(360deg);
-    --cheatjs-saturate: saturate(1.2);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   body.cheatjs-drunk,
   body.cheatjs-disco {
     animation: none;
+  }
+
+  .cheatjs-fall-down-letter {
+    animation: none;
+  }
+
+  .cheatjs-runaway-target {
+    transition: none;
   }
 }

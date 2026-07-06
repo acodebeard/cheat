@@ -38,7 +38,7 @@ The initial WordPress plugin ships with these presets:
 - `disco`: adds a colorful party effect.
 - `upside_down`: turns the page upside down.
 - `grayscale`: removes color from the page.
-- `high_contrast`: increases contrast across the page.
+- `runaway`: makes clickable elements dodge the cursor.
 - `soft_blur`: applies a soft blur effect.
 
 ## Developer Presets

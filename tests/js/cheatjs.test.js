@@ -32,6 +32,26 @@ function press(key, target = document.body) {
   }));
 }
 
+function pointerEvent(type, target, clientX, clientY) {
+  const event = new MouseEvent(type, {
+    bubbles: true,
+    cancelable: true,
+    clientX,
+    clientY,
+  });
+  target.dispatchEvent(event);
+  return event;
+}
+
+function translatedPixels(element) {
+  const match = element.style.transform.match(/translate\((-?\d+(?:\.\d+)?)px, (-?\d+(?:\.\d+)?)px\)/);
+
+  return match ? {
+    x: Number(match[1]),
+    y: Number(match[2]),
+  } : null;
+}
+
 function preset(overrides = {}) {
   return {
     id: 'konami',
@@ -41,6 +61,20 @@ function preset(overrides = {}) {
     offMessage: 'Konami disabled.',
     ...overrides,
   };
+}
+
+function setElementRect(element, rect) {
+  element.getBoundingClientRect = () => ({
+    x: rect.left,
+    y: rect.top,
+    width: rect.right - rect.left,
+    height: rect.bottom - rect.top,
+    top: rect.top,
+    right: rect.right,
+    bottom: rect.bottom,
+    left: rect.left,
+    toJSON: () => rect,
+  });
 }
 
 describe('CheatJS frontend detector', () => {
@@ -249,6 +283,311 @@ describe('CheatJS frontend detector', () => {
     controller.destroy();
   });
 
+  it('fall down wraps visible text letters with varied animation values', () => {
+    Object.defineProperty(window, 'innerWidth', {
+      configurable: true,
+      value: 1024,
+    });
+    Object.defineProperty(window, 'innerHeight', {
+      configurable: true,
+      value: 600,
+    });
+    document.body.innerHTML = `
+      <main>
+        <p class="visible-copy">Hello JS</p>
+        <p class="offscreen-copy">Hidden text</p>
+        <button type="button">Button text</button>
+      </main>
+    `;
+    setElementRect(document.querySelector('.visible-copy'), {
+      top: 10,
+      right: 200,
+      bottom: 40,
+      left: 10,
+    });
+    setElementRect(document.querySelector('.offscreen-copy'), {
+      top: 900,
+      right: 200,
+      bottom: 930,
+      left: 10,
+    });
+    loadCheatJS();
+    const controller = window.CheatJS.init({
+      maxGapMs: 2000,
+      presets: [preset({
+        id: 'fall_down',
+        bodyClass: 'cheatjs-fall-down',
+        sequence: ['f'],
+        onMessage: 'Fall down mode enabled.',
+        offMessage: 'Fall down mode disabled.',
+      })],
+    }, document);
+
+    press('f');
+
+    const visibleLetters = Array.from(document.querySelectorAll('.visible-copy .cheatjs-fall-down-letter'));
+    expect(visibleLetters.map((letter) => letter.textContent).join('')).toBe('HelloJS');
+    expect(document.querySelector('.visible-copy').textContent).toBe('Hello JS');
+    expect(document.querySelectorAll('.offscreen-copy .cheatjs-fall-down-letter')).toHaveLength(0);
+    expect(document.querySelector('.cheatjs-stop-button .cheatjs-fall-down-letter')).toBeNull();
+    expect(new Set(visibleLetters.map((letter) => letter.style.getPropertyValue('--cheatjs-fall-drop-duration'))).size).toBeGreaterThan(1);
+    controller.destroy();
+  });
+
+  it('fall down wraps visible non-space characters instead of leaving punctuation behind', () => {
+    document.body.innerHTML = '<p id="copy">A! 7?</p>';
+    loadCheatJS();
+    const controller = window.CheatJS.init({
+      maxGapMs: 2000,
+      presets: [preset({
+        id: 'fall_down',
+        bodyClass: 'cheatjs-fall-down',
+        sequence: ['f'],
+        onMessage: 'Fall down mode enabled.',
+        offMessage: 'Fall down mode disabled.',
+      })],
+    }, document);
+
+    press('f');
+
+    const fallingCharacters = Array.from(document.querySelectorAll('#copy .cheatjs-fall-down-letter'));
+    expect(fallingCharacters.map((character) => character.textContent).join('')).toBe('A!7?');
+    expect(Array.from(document.querySelector('#copy').childNodes).filter((node) => node.nodeType === Node.TEXT_NODE).map((node) => node.nodeValue).join('')).toBe(' ');
+    controller.destroy();
+  });
+
+  it('fall down gives one random character an extra hold before falling', () => {
+    vi.spyOn(Math, 'random').mockReturnValue(0.5);
+    document.body.innerHTML = '<p id="copy">ABCD</p>';
+    loadCheatJS();
+    const controller = window.CheatJS.init({
+      maxGapMs: 2000,
+      presets: [preset({
+        id: 'fall_down',
+        bodyClass: 'cheatjs-fall-down',
+        sequence: ['f'],
+        onMessage: 'Fall down mode enabled.',
+        offMessage: 'Fall down mode disabled.',
+      })],
+    }, document);
+
+    press('f');
+
+    const fallingCharacters = Array.from(document.querySelectorAll('#copy .cheatjs-fall-down-letter'));
+    const heldCharacters = fallingCharacters.filter((character) => (
+      character.classList.contains('cheatjs-fall-down-letter--held')
+    ));
+    expect(heldCharacters).toHaveLength(1);
+    expect(heldCharacters[0].textContent).toBe('C');
+    expect(heldCharacters[0].style.getPropertyValue('--cheatjs-fall-hold-delay')).toBe('2s');
+    expect(fallingCharacters.filter((character) => (
+      character.style.getPropertyValue('--cheatjs-fall-hold-delay') === '0s'
+    ))).toHaveLength(3);
+    controller.destroy();
+  });
+
+  it('fall down restores original text when toggled off by sequence', () => {
+    document.body.innerHTML = '<p id="copy">Hello <strong>World</strong></p>';
+    loadCheatJS();
+    const controller = window.CheatJS.init({
+      maxGapMs: 2000,
+      presets: [preset({
+        id: 'fall_down',
+        bodyClass: 'cheatjs-fall-down',
+        sequence: ['f'],
+        onMessage: 'Fall down mode enabled.',
+        offMessage: 'Fall down mode disabled.',
+      })],
+    }, document);
+
+    press('f');
+    expect(document.querySelectorAll('.cheatjs-fall-down-letter').length).toBeGreaterThan(0);
+
+    press('f');
+
+    expect(document.querySelectorAll('.cheatjs-fall-down-letter')).toHaveLength(0);
+    expect(document.querySelector('#copy').innerHTML).toBe('Hello <strong>World</strong>');
+    controller.destroy();
+  });
+
+  it('clicking the stop button restores fall down letters', () => {
+    document.body.innerHTML = '<p id="copy">Drop me</p>';
+    loadCheatJS();
+    const controller = window.CheatJS.init({
+      maxGapMs: 2000,
+      presets: [preset({
+        id: 'fall_down',
+        bodyClass: 'cheatjs-fall-down',
+        sequence: ['f'],
+        onMessage: 'Fall down mode enabled.',
+        offMessage: 'Fall down mode disabled.',
+      })],
+    }, document);
+
+    press('f');
+    document.querySelector('.cheatjs-stop-button').click();
+
+    expect(document.body.classList.contains('cheatjs-fall-down')).toBe(false);
+    expect(document.querySelectorAll('.cheatjs-fall-down-letter')).toHaveLength(0);
+    expect(document.querySelector('#copy').textContent).toBe('Drop me');
+    controller.destroy();
+  });
+
+  it('runaway moves clickable elements away using pointer movement direction', () => {
+    Object.defineProperty(window, 'innerWidth', {
+      configurable: true,
+      value: 800,
+    });
+    Object.defineProperty(window, 'innerHeight', {
+      configurable: true,
+      value: 600,
+    });
+    document.body.innerHTML = '<button type="button" id="run">Run</button><p id="plain">Plain</p>';
+    const button = document.querySelector('#run');
+    setElementRect(button, {
+      top: 100,
+      right: 180,
+      bottom: 140,
+      left: 100,
+    });
+    loadCheatJS();
+    const controller = window.CheatJS.init({
+      maxGapMs: 2000,
+      presets: [preset({
+        id: 'runaway',
+        bodyClass: 'cheatjs-runaway',
+        sequence: ['r'],
+        onMessage: 'Runaway mode enabled.',
+        offMessage: 'Runaway mode disabled.',
+      })],
+    }, document);
+
+    press('r');
+    pointerEvent('pointermove', document, 60, 120);
+    pointerEvent('pointermove', document, 95, 120);
+
+    const transform = translatedPixels(button);
+    expect(button.classList.contains('cheatjs-runaway-target')).toBe(true);
+    expect(transform.x).toBeGreaterThan(0);
+    expect(transform.y).toBe(0);
+    expect(document.querySelector('#plain').style.transform).toBe('');
+    controller.destroy();
+  });
+
+  it('runaway clamps movement to keep clickable elements in the viewport', () => {
+    Object.defineProperty(window, 'innerWidth', {
+      configurable: true,
+      value: 220,
+    });
+    Object.defineProperty(window, 'innerHeight', {
+      configurable: true,
+      value: 160,
+    });
+    document.body.innerHTML = '<a href="#" id="run">Run</a>';
+    const link = document.querySelector('#run');
+    setElementRect(link, {
+      top: 60,
+      right: 210,
+      bottom: 90,
+      left: 150,
+    });
+    loadCheatJS();
+    const controller = window.CheatJS.init({
+      maxGapMs: 2000,
+      presets: [preset({
+        id: 'runaway',
+        bodyClass: 'cheatjs-runaway',
+        sequence: ['r'],
+        onMessage: 'Runaway mode enabled.',
+        offMessage: 'Runaway mode disabled.',
+      })],
+    }, document);
+
+    press('r');
+    pointerEvent('pointermove', document, 125, 75);
+    pointerEvent('pointermove', document, 165, 75);
+
+    const transform = translatedPixels(link);
+    expect(transform.x).toBeGreaterThanOrEqual(0);
+    expect(transform.x).toBeLessThanOrEqual(10);
+    expect(transform.y).toBe(0);
+    controller.destroy();
+  });
+
+  it('runaway prevents nearby pointer activation and restores moved targets on stop', () => {
+    document.body.innerHTML = '<button type="button" id="run">Run</button>';
+    const button = document.querySelector('#run');
+    setElementRect(button, {
+      top: 100,
+      right: 180,
+      bottom: 140,
+      left: 100,
+    });
+    loadCheatJS();
+    const controller = window.CheatJS.init({
+      maxGapMs: 2000,
+      presets: [preset({
+        id: 'runaway',
+        bodyClass: 'cheatjs-runaway',
+        sequence: ['r'],
+        onMessage: 'Runaway mode enabled.',
+        offMessage: 'Runaway mode disabled.',
+      })],
+    }, document);
+
+    press('r');
+    pointerEvent('pointermove', document, 60, 120);
+    pointerEvent('pointermove', document, 95, 120);
+
+    const pointerDown = pointerEvent('pointerdown', button, 118, 120);
+    const click = pointerEvent('click', button, 118, 120);
+    expect(pointerDown.defaultPrevented).toBe(true);
+    expect(click.defaultPrevented).toBe(true);
+
+    document.querySelector('.cheatjs-stop-button').click();
+
+    expect(document.body.classList.contains('cheatjs-runaway')).toBe(false);
+    expect(button.classList.contains('cheatjs-runaway-target')).toBe(false);
+    expect(button.style.transform).toBe('');
+
+    const afterStopClick = pointerEvent('click', button, 118, 120);
+    expect(afterStopClick.defaultPrevented).toBe(false);
+    controller.destroy();
+  });
+
+  it('runaway does not keep blocking non-pointer clicks after a stale pointer attempt', () => {
+    const now = vi.spyOn(Date, 'now').mockReturnValue(1000);
+    document.body.innerHTML = '<button type="button" id="run">Run</button>';
+    const button = document.querySelector('#run');
+    setElementRect(button, {
+      top: 100,
+      right: 180,
+      bottom: 140,
+      left: 100,
+    });
+    loadCheatJS();
+    const controller = window.CheatJS.init({
+      maxGapMs: 2000,
+      presets: [preset({
+        id: 'runaway',
+        bodyClass: 'cheatjs-runaway',
+        sequence: ['r'],
+        onMessage: 'Runaway mode enabled.',
+        offMessage: 'Runaway mode disabled.',
+      })],
+    }, document);
+
+    press('r');
+    const pointerDown = pointerEvent('pointerdown', button, 118, 120);
+    now.mockReturnValue(2501);
+    const staleClick = pointerEvent('click', button, 118, 120);
+
+    expect(pointerDown.defaultPrevented).toBe(true);
+    expect(staleClick.defaultPrevented).toBe(false);
+    now.mockRestore();
+    controller.destroy();
+  });
+
   it('clicking the stop button shows a joke stop notice from the message pool', () => {
     loadCheatJS();
     const controller = window.CheatJS.init({
@@ -411,37 +750,64 @@ describe('CheatJS frontend detector', () => {
     expect(css).not.toMatch(/body\[class\*="cheatjs-"\]\s*>\s*:not\(\.cheatjs-notice\)/);
     expect(css).not.toMatch(/body\[class\*="cheatjs-"\]\s*>\s*:not\(\.cheatjs-stop-button\)/);
     expect(css).toContain(':not(.cheatjs-notice):not(.cheatjs-stop-button)');
-    expect(css).toMatch(/body\.cheatjs-disco\s*>\s*:not\(\.cheatjs-notice\):not\(\.cheatjs-stop-button\),[\s\S]*body\.cheatjs-drunk\s*>\s*:not\(\.cheatjs-notice\):not\(\.cheatjs-stop-button\),[\s\S]*body\.cheatjs-grayscale\s*>\s*:not\(\.cheatjs-notice\):not\(\.cheatjs-stop-button\),[\s\S]*body\.cheatjs-high-contrast\s*>\s*:not\(\.cheatjs-notice\):not\(\.cheatjs-stop-button\),[\s\S]*body\.cheatjs-soft-blur\s*>\s*:not\(\.cheatjs-notice\):not\(\.cheatjs-stop-button\)\s*\{[\s\S]*filter:/);
+    expect(css).not.toMatch(/body\.cheatjs-disco\s*>\s*:not\(\.cheatjs-notice\):not\(\.cheatjs-stop-button\)/);
+    expect(css).toMatch(/body\.cheatjs-drunk\s*>\s*:not\(\.cheatjs-notice\):not\(\.cheatjs-stop-button\),[\s\S]*body\.cheatjs-grayscale\s*>\s*:not\(\.cheatjs-notice\):not\(\.cheatjs-stop-button\),[\s\S]*body\.cheatjs-soft-blur\s*>\s*:not\(\.cheatjs-notice\):not\(\.cheatjs-stop-button\)\s*\{[\s\S]*filter:/);
     expect(css).toMatch(/body\.cheatjs-confidence\s*>\s*:not\(\.cheatjs-notice\):not\(\.cheatjs-stop-button\),[\s\S]*body\.cheatjs-upside-down\s*>\s*:not\(\.cheatjs-notice\):not\(\.cheatjs-stop-button\),[\s\S]*body\.cheatjs-drunk\s*>\s*:not\(\.cheatjs-notice\):not\(\.cheatjs-stop-button\)\s*\{[\s\S]*transform:/);
     expect(css).toMatch(/filter:\s*var\(--cheatjs-grayscale\)\s*var\(--cheatjs-contrast\)\s*var\(--cheatjs-brightness\)\s*var\(--cheatjs-saturate\)\s*var\(--cheatjs-soft-blur\)\s*var\(--cheatjs-drunk-blur\)\s*var\(--cheatjs-hue\)/);
     expect(css).toMatch(/transform:\s*rotate\(var\(--cheatjs-rotate-base\)\)\s*rotate\(var\(--cheatjs-rotate-wobble\)\)\s*translateX\(var\(--cheatjs-translate-x\)\)\s*scale\(var\(--cheatjs-scale\)\)/);
     expect(css).not.toMatch(/body\.cheatjs-soft-blur\s*\{[^}]*filter:/);
     expect(css).not.toMatch(/body\.cheatjs-drunk\s*\{[^}]*filter:/);
     expect(css).not.toMatch(/body\.cheatjs-grayscale\s*\{[^}]*filter:/);
-    expect(css).not.toMatch(/body\.cheatjs-high-contrast\s*\{[^}]*filter:/);
+    expect(css).not.toMatch(/body\.cheatjs-high-contrast/);
     expect(css).not.toMatch(/body\.cheatjs-upside-down\s*\{[^}]*transform:/);
   });
 
-  it('defines visibly distinct disco hue keyframes and disables animation for reduced motion', () => {
+  it('defines disco as a background-only hue animation and disables animation for reduced motion', () => {
     const css = loadEffects();
+    const discoKeyframes = css.slice(
+      css.indexOf('@keyframes cheatjs-disco'),
+      css.indexOf('@keyframes cheatjs-fall-down-shake'),
+    );
 
-    expect(css).toMatch(/@keyframes cheatjs-disco[\s\S]*--cheatjs-hue:\s*hue-rotate\(120deg\)/);
-    expect(css).toMatch(/@keyframes cheatjs-disco[\s\S]*--cheatjs-hue:\s*hue-rotate\(240deg\)/);
+    expect(css).toMatch(/body\.cheatjs-disco\s*\{[\s\S]*background-color:\s*hsl\(340\s+100%\s+32%\)/);
+    expect(css).toMatch(/body\.cheatjs-disco\s*\{[\s\S]*animation:\s*cheatjs-disco\s+1\.2s\s+steps\(1,\s*end\)\s+infinite/);
+    expect(css).not.toMatch(/body\.cheatjs-disco\s*\{[^}]*filter:/);
+    expect(css).not.toMatch(/body\.cheatjs-disco\s*>\s*:not\(\.cheatjs-notice\):not\(\.cheatjs-stop-button\)/);
+    expect(discoKeyframes).toMatch(/@keyframes cheatjs-disco[\s\S]*background-color:\s*hsl\(100\s+100%\s+32%\)/);
+    expect(discoKeyframes).toMatch(/@keyframes cheatjs-disco[\s\S]*background-color:\s*hsl\(220\s+100%\s+32%\)/);
+    expect(discoKeyframes).not.toMatch(/--cheatjs-hue|--cheatjs-saturate|filter:/);
     expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\)[\s\S]*body\.cheatjs-disco[\s\S]*animation:\s*none/);
   });
 
   it('defines required visual details for named CSS effects', () => {
     const css = loadEffects();
+    const drunkKeyframes = css.slice(
+      css.indexOf('@keyframes cheatjs-drunk'),
+      css.indexOf('@keyframes cheatjs-disco'),
+    );
 
     expect(css).toMatch(/body\.cheatjs-geocities\s*\{[\s\S]*font-family:\s*"Comic Sans MS"/);
     expect(css).toMatch(/body\.cheatjs-konami::before\s*\{[\s\S]*repeating-linear-gradient[\s\S]*rgba\(0,\s*255,\s*65/);
     expect(css).toMatch(/body\.cheatjs-konami::after\s*\{[\s\S]*content:\s*"KONAMI MODE"/);
     expect(css).toMatch(/body\.cheatjs-drunk\s*\{[\s\S]*--cheatjs-drunk-blur:\s*blur\(/);
-    expect(css).toMatch(/body\.cheatjs-upside-down\s*\{[\s\S]*--cheatjs-rotate-base:\s*180deg/);
-    expect(css).toMatch(/@keyframes cheatjs-drunk[\s\S]*--cheatjs-rotate-wobble:\s*-1deg[\s\S]*--cheatjs-rotate-wobble:\s*1deg/);
-    expect(css).not.toMatch(/@keyframes cheatjs-drunk[\s\S]*--cheatjs-rotate:/);
-    expect(css).toMatch(/@keyframes cheatjs-disco[\s\S]*--cheatjs-saturate:\s*saturate\(1\.[0-9]+\)/);
-    expect(css).toMatch(/body\.cheatjs-high-contrast\s*\{[\s\S]*--cheatjs-contrast:\s*contrast\(1\.5\)[\s\S]*--cheatjs-brightness:\s*brightness\(1\.[0-9]+\)/);
+    expect(css).toMatch(/@keyframes cheatjs-updown[\s\S]*transform:\s*scaleY\(-1\)/);
+    expect(css).toMatch(/body\.cheatjs-upside-down\s*>\s*:not\(\.cheatjs-notice\):not\(\.cheatjs-stop-button\)\s*\{[\s\S]*animation:\s*cheatjs-updown/);
+    expect(css).not.toMatch(/body\.cheatjs-upside-down\s*\{[^}]*--cheatjs-rotate-base:/);
+    expect(drunkKeyframes).toMatch(/@keyframes cheatjs-drunk[\s\S]*filter:\s*blur\(4px\)[\s\S]*transform:\s*translateX\(2px\)/);
+    expect(drunkKeyframes).toMatch(/@keyframes cheatjs-drunk[\s\S]*transform:\s*translateX\(-2px\)/);
+    expect(drunkKeyframes).not.toMatch(/--cheatjs-rotate/);
+    expect(css).toMatch(/@keyframes cheatjs-disco[\s\S]*background-color:/);
+  });
+
+  it('defines fall down letter animation CSS', () => {
+    const css = loadEffects();
+
+    expect(css).toMatch(/body\.cheatjs-fall-down\s*\{[\s\S]*overflow-x:\s*hidden/);
+    expect(css).toMatch(/\.cheatjs-fall-down-letter\s*\{[\s\S]*display:\s*inline-block[\s\S]*animation:[\s\S]*cheatjs-fall-down-shake[\s\S]*cheatjs-fall-down-drop/);
+    expect(css).toMatch(/\.cheatjs-fall-down-letter\s*\{[\s\S]*calc\(var\(--cheatjs-fall-delay\)\s*\+\s*0\.72s\s*\+\s*var\(--cheatjs-fall-hold-delay\)\)/);
+    expect(css).toMatch(/@keyframes cheatjs-fall-down-shake[\s\S]*translateX\(-1px\)[\s\S]*translateX\(1px\)/);
+    expect(css).toMatch(/@keyframes cheatjs-fall-down-drop[\s\S]*translateY\(110vh\)/);
+    expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\)[\s\S]*\.cheatjs-fall-down-letter[\s\S]*animation:\s*none/);
   });
 
   it('styles the stop cheating button as a fixed side control', () => {

@@ -1,15 +1,15 @@
 (function (window) {
   'use strict';
 
-  var ARROW_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
-  var ARROW_LABELS = {
+  const ARROW_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+  const ARROW_LABELS = {
     ArrowUp: '↑',
     ArrowDown: '↓',
     ArrowLeft: '←',
     ArrowRight: '→',
   };
-  var AUTO_CONTROLLER_KEY = 'CHEATJS_ADMIN_AUTO_CONTROLLER';
-  var AUTO_PENDING_KEY = 'CHEATJS_ADMIN_AUTO_PENDING';
+  const AUTO_CONTROLLER_KEY = 'CHEATJS_ADMIN_AUTO_CONTROLLER';
+  const AUTO_PENDING_KEY = 'CHEATJS_ADMIN_AUTO_PENDING';
 
   function normalizeKey(key) {
     if (typeof key !== 'string') {
@@ -32,7 +32,7 @@
   }
 
   function keyLabel(key) {
-    var normalized = normalizeKey(key);
+    const normalized = normalizeKey(key);
 
     if (!normalized) {
       return '';
@@ -71,7 +71,7 @@
   }
 
   function renderSequence(card, sequence) {
-    var parts = findParts(card);
+    const parts = findParts(card);
 
     if (parts.input) {
       parts.input.value = sequenceValue(sequence);
@@ -83,7 +83,7 @@
 
     parts.chips.textContent = '';
     sequence.forEach(function (key) {
-      var chip = card.ownerDocument.createElement('span');
+      const chip = card.ownerDocument.createElement('span');
       chip.className = 'cheatjs-key-chip';
       chip.textContent = keyLabel(key);
       parts.chips.appendChild(chip);
@@ -91,13 +91,13 @@
   }
 
   function getSequence(card) {
-    var input = card.querySelector('.cheatjs-sequence-input');
+    const input = card.querySelector('.cheatjs-sequence-input');
     return parseSequence(input ? input.value : '');
   }
 
   function createController(doc) {
-    var activeCard = null;
-    var previousSequence = [];
+    let activeCard = null;
+    let previousSequence = [];
 
     function stopRecording(options) {
       if (!activeCard) {
@@ -128,13 +128,13 @@
     }
 
     function appendKey(key) {
-      var sequence = getSequence(activeCard);
+      const sequence = getSequence(activeCard);
       sequence.push(key);
       renderSequence(activeCard, sequence);
     }
 
     function removeLastKey() {
-      var sequence = getSequence(activeCard);
+      const sequence = getSequence(activeCard);
       sequence.pop();
       renderSequence(activeCard, sequence);
     }
@@ -148,8 +148,8 @@
     }
 
     function handleClick(event) {
-      var target = event.target;
-      var card = cardFromEvent(event);
+      const target = event.target;
+      const card = cardFromEvent(event);
 
       if (!card || !target || !target.closest) {
         return;
@@ -194,7 +194,7 @@
         return;
       }
 
-      var key = normalizeKey(event.key);
+      const key = normalizeKey(event.key);
       if (!key) {
         return;
       }

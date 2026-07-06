@@ -29,8 +29,9 @@ final class PresetsTest extends TestCase {
             'drunk',
             'disco',
             'upside_down',
+            'fall_down',
             'grayscale',
-            'high_contrast',
+            'runaway',
             'soft_blur',
         ];
 
@@ -51,6 +52,31 @@ final class PresetsTest extends TestCase {
                 CheatJS_Keys::parse_sequence( $presets[ $id ]['default_sequence'] )
             );
         }
+    }
+
+    public function test_fall_down_preset_uses_approved_defaults(): void {
+        $presets = CheatJS_Presets::get_presets();
+
+        $this->assertArrayHasKey( 'fall_down', $presets );
+        $this->assertSame( 'Fall Down', $presets['fall_down']['name'] );
+        $this->assertSame( 'cheatjs-fall-down', $presets['fall_down']['body_class'] );
+        $this->assertSame( [ 'f', 'a', 'l', 'l' ], $presets['fall_down']['default_sequence'] );
+        $this->assertFalse( $presets['fall_down']['default_enabled'] );
+        $this->assertSame( 'Fall down mode enabled.', $presets['fall_down']['on_message'] );
+        $this->assertSame( 'Fall down mode disabled.', $presets['fall_down']['off_message'] );
+    }
+
+    public function test_runaway_preset_replaces_high_contrast_with_approved_defaults(): void {
+        $presets = CheatJS_Presets::get_presets();
+
+        $this->assertArrayNotHasKey( 'high_contrast', $presets );
+        $this->assertArrayHasKey( 'runaway', $presets );
+        $this->assertSame( 'Runaway', $presets['runaway']['name'] );
+        $this->assertSame( 'cheatjs-runaway', $presets['runaway']['body_class'] );
+        $this->assertSame( [ 'r', 'u', 'n' ], $presets['runaway']['default_sequence'] );
+        $this->assertFalse( $presets['runaway']['default_enabled'] );
+        $this->assertSame( 'Runaway mode enabled.', $presets['runaway']['on_message'] );
+        $this->assertSame( 'Runaway mode disabled.', $presets['runaway']['off_message'] );
     }
 
     public function test_developer_filter_can_add_valid_preset(): void {
