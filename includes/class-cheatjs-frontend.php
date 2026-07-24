@@ -53,7 +53,7 @@ final class CheatJS_Frontend {
 
         $base_file = defined( 'CHEATJS_FILE' ) ? CHEATJS_FILE : dirname( __DIR__ ) . '/cheatjs.php';
         $base_url  = defined( 'CHEATJS_URL' ) ? CHEATJS_URL : plugin_dir_url( $base_file );
-        $version   = defined( 'CHEATJS_VERSION' ) ? CHEATJS_VERSION : '0.1.0';
+        $version   = defined( 'CHEATJS_VERSION' ) ? CHEATJS_VERSION : '0.2.0';
 
         wp_enqueue_style(
             'cheatjs-effects',

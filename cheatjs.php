@@ -2,7 +2,7 @@
 /**
  * Plugin Name: CheatJS
  * Description: Playful keyboard easter eggs for WordPress sites.
- * Version: 0.1.0
+ * Version: 0.2.0
  * Author: CheatJS Contributors
  * License: GPL-3.0-or-later
  * Text Domain: cheatjs
@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-define( 'CHEATJS_VERSION', '0.1.0' );
+define( 'CHEATJS_VERSION', '0.2.0' );
 define( 'CHEATJS_FILE', __FILE__ );
 define( 'CHEATJS_DIR', plugin_dir_path( __FILE__ ) );
 define( 'CHEATJS_URL', plugin_dir_url( __FILE__ ) );
